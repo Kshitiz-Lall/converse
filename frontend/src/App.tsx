@@ -1,11 +1,17 @@
-import { Button } from "@/components/ui/button"
+import { useRoutes } from 'react-router-dom';
+import { ThemeProvider } from './components/theme-provider';
+import { routes } from './routes';
 
 function App() {
+  const routeElement = useRoutes(routes);
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-svh">
-      <Button>Click me</Button>
-    </div>
-  )
+    <>
+      <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+        <div className="app">{routeElement}</div>
+      </ThemeProvider>
+    </>
+  );
 }
 
-export default App
+export default App;
