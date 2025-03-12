@@ -16,6 +16,7 @@ import { imageApi, ImageOptimizationOptions, OptimizedImageStats } from '@/servi
 import {
   AlertCircle,
   ArrowLeft,
+  ArrowRight,
   Download,
   Image,
   Info,
@@ -160,7 +161,13 @@ export default function ImageOptimizerPage() {
             <span>Back to Dashboard</span>
           </Link>
           <h1 className="text-3xl font-bold text-center">Image Optimizer</h1>
-          <div className="w-24"></div> {/* Spacer to keep title centered */}
+          <Link
+            to="/image-optimizer/docs"
+            className="flex items-center text-primary hover:text-primary/80 transition-colors"
+          >
+            <span>Goto Documentation</span>
+            <ArrowRight className="h-5 w-5 mr-2" />
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -343,27 +350,90 @@ export default function ImageOptimizerPage() {
 
                   {stats && (
                     <div className="w-full mt-4 p-4 bg-gray-50 rounded-lg">
-                      <h3 className="text-sm font-medium mb-2 flex items-center">
+                      <h3 className="text-sm font-medium mb-3 flex items-center">
                         <Info className="h-4 w-4 mr-1" />
                         Optimization Results
                       </h3>
-                      <div className="grid grid-cols-2 gap-y-2 text-sm">
-                        <div className="text-gray-500">Format:</div>
-                        <div className="font-medium">{stats.format.toUpperCase()}</div>
 
-                        <div className="text-gray-500">Dimensions:</div>
-                        <div className="font-medium">
-                          {stats.width} × {stats.height}px
+                      {/* File size comparison */}
+                      <div className="mb-4">
+                        <div className="flex justify-between text-sm mb-1">
+                          <span className="text-gray-500">File Size Comparison</span>
+                          <span className="font-medium">{stats.compressionRatio} reduced</span>
                         </div>
 
-                        <div className="text-gray-500">Original size:</div>
-                        <div className="font-medium">{formatFileSize(stats.originalSize)}</div>
+                        {/* Size comparison bars */}
+                        <div className="space-y-2">
+                          <div>
+                            <div className="flex justify-between text-xs mb-1">
+                              <span>Original</span>
+                              <span>{formatFileSize(stats.originalSize)}</span>
+                            </div>
+                            <div className="h-3 w-full bg-gray-200 rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-gray-400 rounded-full"
+                                style={{ width: '100%' }}
+                              ></div>
+                            </div>
+                          </div>
 
-                        <div className="text-gray-500">Optimized size:</div>
-                        <div className="font-medium">{formatFileSize(stats.newSize)}</div>
+                          <div>
+                            <div className="flex justify-between text-xs mb-1">
+                              <span>Optimized</span>
+                              <span>{formatFileSize(stats.newSize)}</span>
+                            </div>
+                            <div className="h-3 w-full bg-gray-200 rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-green-500 rounded-full"
+                                style={{ width: `${(stats.newSize / stats.originalSize) * 100}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
 
-                        <div className="text-gray-500">Reduction:</div>
-                        <div className="font-medium text-green-600">{stats.compressionRatio}</div>
+                      {/* Circular progress for reduction percentage */}
+                      <div className="flex items-center justify-between">
+                        <div className="grid grid-cols-2 gap-y-2 text-sm flex-1">
+                          <div className="text-gray-500">Format:</div>
+                          <div className="font-medium">{stats.format.toUpperCase()}</div>
+
+                          <div className="text-gray-500">Dimensions:</div>
+                          <div className="font-medium">
+                            {stats.width} × {stats.height}px
+                          </div>
+                        </div>
+
+                        <div className="relative h-20 w-20 flex items-center justify-center">
+                          <svg className="w-full h-full" viewBox="0 0 100 100">
+                            {/* Background circle */}
+                            <circle
+                              cx="50"
+                              cy="50"
+                              r="45"
+                              fill="none"
+                              stroke="#e5e7eb"
+                              strokeWidth="10"
+                            />
+
+                            {/* Progress circle */}
+                            <circle
+                              cx="50"
+                              cy="50"
+                              r="45"
+                              fill="none"
+                              stroke="#22c55e"
+                              strokeWidth="10"
+                              strokeLinecap="round"
+                              strokeDasharray={`${2 * Math.PI * 45}`}
+                              strokeDashoffset={`${2 * Math.PI * 45 * (1 - parseFloat(stats.compressionRatio) / 100)}`}
+                              transform="rotate(-90 50 50)"
+                            />
+                          </svg>
+                          <div className="absolute inset-0 flex items-center justify-center font-medium text-lg">
+                            {stats.compressionRatio}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   )}

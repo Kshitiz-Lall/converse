@@ -162,7 +162,7 @@ export function NavMenu() {
           </NavigationMenuContent>
         </NavigationMenuItem>
 
-        <NavigationMenuItem>
+        {/* <NavigationMenuItem>
           <Link to="/login">
             <NavigationMenuLink
               className={navigationMenuTriggerStyle()}
@@ -178,7 +178,7 @@ export function NavMenu() {
               <ModeToggle />
             </NavigationMenuLink>
           </Link>
-        </NavigationMenuItem>
+        </NavigationMenuItem> */}
       </NavigationMenuList>
     </NavigationMenu>
   );

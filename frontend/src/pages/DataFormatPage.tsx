@@ -20,6 +20,7 @@ import {
   Check,
   AlertCircle,
   Home,
+  ArrowRight,
 } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -156,7 +157,13 @@ export default function DataFormatPage() {
             <span>Back to Dashboard</span>
           </Link>
           <h1 className="text-3xl font-bold text-center">{APP_TEXT.title}</h1>
-          <div className="w-24"></div> {/* Spacer to keep title centered */}
+          <Link
+            to="/data-format/docs"
+            className="flex items-center text-primary hover:text-primary/80 transition-colors"
+          >
+            <span>Goto Documentation</span>
+            <ArrowRight className="h-5 w-5 mr-2" />
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
