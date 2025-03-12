@@ -1,6 +1,7 @@
 import { useRoutes } from 'react-router-dom';
 import { ThemeProvider } from './components/theme-provider';
 import { routes } from './routes';
+import './App.css';
 
 function App() {
   const routeElement = useRoutes(routes);
@@ -8,7 +9,7 @@ function App() {
   return (
     <>
       <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-        <div className="app">{routeElement}</div>
+        <div className="font-code-latin">{routeElement}</div>
       </ThemeProvider>
     </>
   );

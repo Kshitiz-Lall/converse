@@ -17,6 +17,10 @@ const Unauthorized = lazy(() => import('@/pages/exceptions/Unauthorized'));
 const Forbidden = lazy(() => import('@/pages/exceptions/Forbidden'));
 const Maintenance = lazy(() => import('@/pages/exceptions/Maintenance'));
 
+// Documentation pages
+import ImageOptimizerDocs from './../pages/documentation/ImageOptimizerDoc';
+import DataFormatConverterDocs from '@/pages/documentation/DataFormatConverterDoc';
+
 // Loading component for suspense fallback
 const Loader = () => (
   <div className="flex h-screen w-full items-center justify-center">
@@ -61,7 +65,6 @@ export const routes: RouteObject[] = [
           </Suspense>
         ),
       },
-      // Future tool routes will go here
       {
         path: '/image-optimizer',
         element: (
@@ -128,18 +131,18 @@ export const routes: RouteObject[] = [
       },
 
       // Auth routes (inside layout for consistent navigation)
-      {
-        path: '/login',
-        element: <LoginPage />,
-      },
-      {
-        path: '/signup',
-        element: <SignupPage />,
-      },
-      {
-        path: '/forgot-password',
-        element: <div>Forgot Password Page</div>, // Replace with actual component when created
-      },
+      // {
+      //   path: '/login',
+      //   element: <LoginPage />,
+      // },
+      // {
+      //   path: '/signup',
+      //   element: <SignupPage />,
+      // },
+      // {
+      //   path: '/forgot-password',
+      //   element: <div>Forgot Password Page</div>,
+      // },
 
       // Exception routes
       {
@@ -179,6 +182,24 @@ export const routes: RouteObject[] = [
         element: (
           <Suspense fallback={<Loader />}>
             <NotFound />
+          </Suspense>
+        ),
+      },
+
+      // Documentation
+      {
+        path: '/image-optimizer/docs',
+        element: (
+          <Suspense fallback={<Loader />}>
+            <ImageOptimizerDocs />
+          </Suspense>
+        ),
+      },
+      {
+        path: '/data-format/docs',
+        element: (
+          <Suspense fallback={<Loader />}>
+            <DataFormatConverterDocs />
           </Suspense>
         ),
       },
