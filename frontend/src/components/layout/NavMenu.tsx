@@ -40,7 +40,7 @@ const tools = [
     description: 'Compress and resize images for the web',
     icon: <Image className="h-4 w-4 mr-2" />,
     path: '/image-optimizer',
-    available: false,
+    available: true,
   },
   {
     id: 'regex-playground',

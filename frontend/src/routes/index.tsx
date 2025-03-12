@@ -1,9 +1,10 @@
 // src/routes/index.tsx
-import { lazy, Suspense } from 'react';
-import { Navigate, RouteObject } from 'react-router-dom';
+import { Layout } from '@/components/layout/Layout';
 import LoginPage from '@/pages/auth/LoginPage';
 import SignupPage from '@/pages/auth/SignupPage';
-import { Layout } from '@/components/layout/Layout';
+import ImageOptimizerPage from '@/pages/ImageOptimizerPage';
+import { lazy, Suspense } from 'react';
+import { RouteObject } from 'react-router-dom';
 
 // Main app components
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
@@ -65,7 +66,7 @@ export const routes: RouteObject[] = [
         path: '/image-optimizer',
         element: (
           <Suspense fallback={<Loader />}>
-            <Maintenance />
+            <ImageOptimizerPage />
           </Suspense>
         ),
       },

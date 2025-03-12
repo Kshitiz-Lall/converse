@@ -27,9 +27,9 @@ const DevTools = [
     id: 'image-optimizer',
     title: 'Image Optimizer',
     description: 'Compress and resize images for the web',
-    icon: <Image className="h-12 w-12 text-muted-foreground" />,
+    icon: <Image className="h-12 w-12 text-primary" />,
     path: '/image-optimizer',
-    available: false,
+    available: true,
   },
   {
     id: 'regex-playground',

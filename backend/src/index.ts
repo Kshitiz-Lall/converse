@@ -7,6 +7,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import compression from "compression";
 import formatRoutes from "./routes/formatRoutes";
+import imageRoutes from "./routes/imageRoutes";
 import errorHandler from "./middleware/errorHandler";
 
 const app: Express = express();
@@ -29,6 +30,7 @@ app.use(
 
 // Routes
 app.use("/api/format", formatRoutes);
+app.use("/api/image", imageRoutes);
 
 // Health check endpoint
 app.get("/health", (req, res) => {
