@@ -1,14 +1,23 @@
 // src/routes/index.tsx
 import { Layout } from '@/components/layout/Layout';
-import LoginPage from '@/pages/auth/LoginPage';
-import SignupPage from '@/pages/auth/SignupPage';
-import ImageOptimizerPage from '@/pages/ImageOptimizerPage';
+import {
+  Clock,
+  FileCode2,
+  FileCog,
+  FileJson,
+  FileText,
+  Image,
+  RefreshCw,
+  Regex,
+} from 'lucide-react';
 import { lazy, Suspense } from 'react';
 import { RouteObject } from 'react-router-dom';
 
 // Main app components
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
 const DataFormatPage = lazy(() => import('@/pages/DataFormatPage'));
+const ImageOptimizerPage = lazy(() => import('@/pages/ImageOptimizerPage'));
+const RegexPlaygroundPage = lazy(() => import('@/pages/RegexPlaygroundPage'));
 
 // Exception pages
 const NotFound = lazy(() => import('@/pages/exceptions/NotFound'));
@@ -18,8 +27,142 @@ const Forbidden = lazy(() => import('@/pages/exceptions/Forbidden'));
 const Maintenance = lazy(() => import('@/pages/exceptions/Maintenance'));
 
 // Documentation pages
-import ImageOptimizerDocs from './../pages/documentation/ImageOptimizerDoc';
 import DataFormatConverterDocs from '@/pages/documentation/DataFormatConverterDoc';
+import ImageOptimizerDocs from './../pages/documentation/ImageOptimizerDoc';
+import RegexPlaygroundDocs from '@/pages/documentation/RegexPlaygroundDocs';
+
+// Centralized tool configurations
+export const devTools = [
+  {
+    id: 'data-format-converter',
+    title: 'Data Format Converter',
+    description: 'Convert between JSON, YAML, and XML formats',
+    icon: <FileJson className="h-10 w-10 mr-2" />,
+    path: '/data-format',
+    available: true,
+  },
+  {
+    id: 'image-optimizer',
+    title: 'Image Optimizer',
+    description: 'Compress and resize images for the web',
+    icon: <Image className="h-10 w-10 mr-2" />,
+    path: '/image-optimizer',
+    available: true,
+  },
+  {
+    id: 'regex-playground',
+    title: 'Regex Playground',
+    description: 'Test and validate regular expressions',
+    icon: <Regex className="h-10 w-10 mr-2" />,
+    path: '/regex-playground',
+    available: true,
+  },
+  {
+    id: 'cron-builder',
+    title: 'Cron Expression Builder',
+    description: 'Build and validate cron expressions',
+    icon: <Clock className="h-10 w-10 mr-2" />,
+    path: '/cron-builder',
+    available: false,
+  },
+  {
+    id: 'api-tester',
+    title: 'API Request Tester',
+    description: 'Test API endpoints with different HTTP methods',
+    icon: <RefreshCw className="h-10 w-10 mr-2" />,
+    path: '/api-tester',
+    available: false,
+  },
+];
+
+export const aiTools = [
+  // AI-Powered Features
+  {
+    id: 'error-debugger',
+    title: 'AI Debugger',
+    description: 'AI-driven error detection and suggestions for bug fixing',
+    icon: <FileCog className="h-10 w-10 mr-2" />,
+    path: '/error-debugger',
+    available: false,
+    category: 'AI-Powered Features',
+  },
+  {
+    id: 'ai-test-generator',
+    title: 'AI Test Case Generator',
+    description: 'Generate unit test cases from your code automatically using AI',
+    icon: <FileText className="h-10 w-10 mr-2" />,
+    path: '/ai-test-generator',
+    available: false,
+    category: 'AI-Powered Features',
+  },
+  {
+    id: 'automated-code-refactoring',
+    title: 'Automated Code Refactoring',
+    description: 'Detect messy code and suggest or auto-apply cleanups following best practices.',
+    icon: <FileCode2 className="h-10 w-10 mr-2" />,
+    path: '/automated-refactoring',
+    available: false,
+    category: 'AI-Powered Features',
+  },
+  {
+    id: 'ai-stack-overflow-search',
+    title: 'AI-Based Stack Overflow Search',
+    description: 'Automatically fetch relevant answers from Stack Overflow when an error occurs.',
+    icon: <FileText className="h-10 w-10 mr-2" />,
+    path: '/stack-overflow-search',
+    available: false,
+    category: 'AI-Powered Features',
+  },
+
+  // Project & Collaboration Tools
+  {
+    id: 'issue-pr-summary-generator',
+    title: 'Issue & PR Summary Generator',
+    description: 'Summarize GitHub/GitLab issues, PRs, and changes using AI.',
+    icon: <FileText className="h-10 w-10 mr-2" />,
+    path: '/issue-pr-summary',
+    available: false,
+    category: 'Project & Collaboration Tools',
+  },
+  {
+    id: 'documentation-auto-generator',
+    title: 'Documentation Auto-Generator',
+    description: 'Generate inline documentation and README files from code.',
+    icon: <FileCog className="h-10 w-10 mr-2" />,
+    path: '/documentation-auto-generator',
+    available: false,
+    category: 'Project & Collaboration Tools',
+  },
+
+  // DevOps & Automation Tools
+  {
+    id: 'dockerfile-generator',
+    title: 'Dockerfile Generator & Optimizer',
+    description: 'AI-assisted Dockerfile creation for better efficiency.',
+    icon: <FileCog className="h-10 w-10 mr-2" />,
+    path: '/dockerfile-generator',
+    available: false,
+    category: 'DevOps & Automation Tools',
+  },
+  {
+    id: 'ci-cd-config-generator',
+    title: 'CI/CD Config Generator',
+    description: 'Generate GitHub Actions, GitLab CI, or Jenkins pipelines with a simple UI.',
+    icon: <FileText className="h-10 w-10 mr-2" />,
+    path: '/ci-cd-config-generator',
+    available: false,
+    category: 'DevOps & Automation Tools',
+  },
+  {
+    id: 'server-log-analyzer',
+    title: 'Server Log Analyzer',
+    description: 'AI-powered insights on log patterns, errors, and optimization tips.',
+    icon: <FileCog className="h-10 w-10 mr-2" />,
+    path: '/server-log-analyzer',
+    available: false,
+    category: 'DevOps & Automation Tools',
+  },
+];
 
 // Loading component for suspense fallback
 const Loader = () => (
@@ -74,10 +217,10 @@ export const routes: RouteObject[] = [
         ),
       },
       {
-        path: '/regex',
+        path: '/regex-playground',
         element: (
           <Suspense fallback={<Loader />}>
-            <Maintenance />
+            <RegexPlaygroundPage />
           </Suspense>
         ),
       },
@@ -200,6 +343,14 @@ export const routes: RouteObject[] = [
         element: (
           <Suspense fallback={<Loader />}>
             <DataFormatConverterDocs />
+          </Suspense>
+        ),
+      },
+      {
+        path: '/regex-playground/docs',
+        element: (
+          <Suspense fallback={<Loader />}>
+            <RegexPlaygroundDocs />
           </Suspense>
         ),
       },

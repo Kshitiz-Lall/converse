@@ -1,4 +1,3 @@
-// src/types/image.ts
 export interface ImageProcessingOptions {
   quality?: number;
   width?: number;

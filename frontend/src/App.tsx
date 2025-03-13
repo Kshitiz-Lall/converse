@@ -9,7 +9,7 @@ function App() {
   return (
     <>
       <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-        <div className="font-code-latin">{routeElement}</div>
+        <div className="font-primary">{routeElement}</div>
       </ThemeProvider>
     </>
   );

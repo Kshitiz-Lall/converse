@@ -12,96 +12,9 @@ import {
 } from '@/components/ui/navigation-menu';
 
 import { cn } from '@/lib/utils';
-import {
-  Clock,
-  FileCode2,
-  FileCog,
-  FileJson,
-  FileText,
-  Grid3X3,
-  Image,
-  RefreshCw,
-  Regex,
-} from 'lucide-react';
-import { ModeToggle } from '../mode-toggle';
-
-const tools = [
-  {
-    id: 'data-format-converter',
-    title: 'Data Format Converter',
-    description: 'Convert between JSON, YAML, and XML formats',
-    icon: <FileJson className="h-4 w-4 mr-2" />,
-    path: '/data-format',
-    available: true,
-  },
-  {
-    id: 'image-optimizer',
-    title: 'Image Optimizer',
-    description: 'Compress and resize images for the web',
-    icon: <Image className="h-4 w-4 mr-2" />,
-    path: '/image-optimizer',
-    available: true,
-  },
-  {
-    id: 'regex-playground',
-    title: 'Regex Playground',
-    description: 'Test and validate regular expressions',
-    icon: <Regex className="h-4 w-4 mr-2" />,
-    path: '/regex',
-    available: false,
-  },
-  {
-    id: 'code-formatter',
-    title: 'Code Formatter',
-    description: 'Format and beautify your code',
-    icon: <FileCode2 className="h-4 w-4 mr-2" />,
-    path: '/code-formatter',
-    available: false,
-  },
-  {
-    id: 'css-grid-generator',
-    title: 'CSS Grid Generator',
-    description: 'Generate CSS grid layouts visually',
-    icon: <Grid3X3 className="h-4 w-4 mr-2" />,
-    path: '/grid-generator',
-    available: false,
-  },
-  {
-    id: 'cron-builder',
-    title: 'Cron Expression Builder',
-    description: 'Build and validate cron expressions',
-    icon: <Clock className="h-4 w-4 mr-2" />,
-    path: '/cron-builder',
-    available: false,
-  },
-];
-
-const moreTools = [
-  {
-    id: 'markdown-editor',
-    title: 'Markdown Editor',
-    description: 'Write and preview markdown documents',
-    icon: <FileText className="h-4 w-4 mr-2" />,
-    path: '/markdown',
-    available: false,
-  },
-  {
-    id: 'api-tester',
-    title: 'API Request Tester',
-    description: 'Test API endpoints with different HTTP methods',
-    icon: <RefreshCw className="h-4 w-4 mr-2" />,
-    path: '/api-tester',
-    available: false,
-  },
-  {
-    id: 'file-diff',
-    title: 'File Diff Tool',
-    description: 'Compare files and see the differences',
-    icon: <FileCog className="h-4 w-4 mr-2" />,
-    path: '/file-diff',
-    available: false,
-  },
-];
+// Import the centralized tool configurations
+import { devTools, aiTools } from '@/routes/index';
+// import { ModeToggle } from '../mode-toggle';
 
 export function NavMenu() {
   const location = useLocation();
@@ -124,7 +37,7 @@ export function NavMenu() {
           <NavigationMenuTrigger>Developer Tools</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-              {tools.map(tool => (
+              {devTools.map(tool => (
                 <ListItem
                   key={tool.id}
                   title={tool.title}
@@ -142,10 +55,10 @@ export function NavMenu() {
         </NavigationMenuItem>
 
         <NavigationMenuItem>
-          <NavigationMenuTrigger>More Tools</NavigationMenuTrigger>
+          <NavigationMenuTrigger>AI Tools</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-              {moreTools.map(tool => (
+              {aiTools.map(tool => (
                 <ListItem
                   key={tool.id}
                   title={tool.title}

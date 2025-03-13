@@ -107,7 +107,7 @@ export default function DataFormatConverterDocs() {
                       </li>
                       <li className="border-b border-gray-200 pb-2">
                         <p className="text-sm text-gray-500">Processing</p>
-                        <p className="font-medium">Client-side</p>
+                        <p className="font-medium">Server-side</p>
                       </li>
                       <li className="border-b border-gray-200 pb-2">
                         <p className="text-sm text-gray-500">Supported Operations</p>
@@ -327,7 +327,7 @@ export default function DataFormatConverterDocs() {
                     <p className="text-gray-700">
                       For large datasets, be mindful of memory constraints. Consider breaking down
                       large files into smaller chunks or using streaming conversion methods when
-                      possible. Our tool supports files up to 1MB for client-side conversion.
+                      possible. Our tool supports files up to 1MB for Server-side conversion.
                     </p>
                   </div>
 
@@ -345,7 +345,7 @@ export default function DataFormatConverterDocs() {
                     <h3 className="text-lg font-semibold mb-2">Remove Sensitive Information</h3>
                     <p className="text-gray-700">
                       Before converting files, review and remove any sensitive or confidential
-                      information. Our tool processes data entirely client-side, but it's always
+                      information. Our tool processes data entirely Server-side, but it's always
                       best to be cautious when handling potentially sensitive data.
                     </p>
                   </div>
@@ -387,7 +387,7 @@ export default function DataFormatConverterDocs() {
               <CardContent className="pt-6">
                 <h2 className="text-2xl font-bold mb-6">API Documentation</h2>
                 <p className="mb-6 text-gray-700">
-                  While our current Data Format Converter is a client-side tool, we provide insights
+                  While our current Data Format Converter is a Server-side tool, we provide insights
                   into potential API integration and future developments.
                 </p>
 
@@ -473,7 +473,7 @@ fetch('https://api.example.com/data/convert', {
                 <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 mt-6">
                   <p className="text-yellow-800">
                     <strong>Note:</strong> This is a conceptual API design. The actual
-                    implementation may vary. Currently, conversion is performed client-side in the
+                    implementation may vary. Currently, conversion is performed Server-side in the
                     browser.
                   </p>
                 </div>

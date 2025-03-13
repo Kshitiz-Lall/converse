@@ -8,7 +8,9 @@ export function Layout() {
         <div className="container flex h-16 items-center">
           <div className="mr-4 hidden md:flex">
             <a className="mr-6 flex items-center space-x-2" href="/">
-              <span className="hidden font-bold sm:inline-block">Conversee</span>
+              <span className="ml-4  hidden font-secondary text-2xl  sm:inline-block">
+                DevToolkit
+              </span>
             </a>
           </div>
           <NavMenu />
