@@ -23,9 +23,12 @@ import {
   Loader2,
   RefreshCcw,
   Upload,
+  CheckCircle,
+  XCircle,
 } from 'lucide-react';
 import { ChangeEvent, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
 import {
   ABOUT_CONTENT,
   FORMATS_CONTENT,
@@ -66,6 +69,21 @@ export default function ImageOptimizerPage() {
     // Validate file type
     if (!file.type.startsWith('image/')) {
       setError('Please select a valid image file');
+      toast.error('Invalid file type', {
+        description: 'Please select a valid image file (JPEG, PNG, WebP, AVIF)',
+        icon: <XCircle className="h-4 w-4" />,
+      });
+      event.target.value = '';
+      return;
+    }
+
+    // Validate file size
+    if (file.size > 10 * 1024 * 1024) {
+      setError('File size exceeds 10MB limit');
+      toast.error('File too large', {
+        description: 'Maximum file size is 10MB',
+        icon: <XCircle className="h-4 w-4" />,
+      });
       event.target.value = '';
       return;
     }
@@ -76,6 +94,10 @@ export default function ImageOptimizerPage() {
     const fileReader = new FileReader();
     fileReader.onload = () => {
       setPreviewUrl(fileReader.result as string);
+      toast.success('Image uploaded', {
+        description: `${file.name} (${formatFileSize(file.size)})`,
+        icon: <CheckCircle className="h-4 w-4" />,
+      });
     };
     fileReader.readAsDataURL(file);
   };
@@ -90,6 +112,9 @@ export default function ImageOptimizerPage() {
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+    toast.info('Image cleared', {
+      description: 'Upload a new image to optimize',
+    });
   };
 
   // Process image optimization
@@ -98,6 +123,11 @@ export default function ImageOptimizerPage() {
 
     setIsProcessing(true);
     setError(null);
+
+    toast.loading('Optimizing image...', {
+      description: 'This may take a few seconds',
+      id: 'optimize-image',
+    });
 
     try {
       // Prepare options
@@ -120,8 +150,21 @@ export default function ImageOptimizerPage() {
       // Get stats
       const optimizationStats = await imageApi.getOptimizedImageStats(selectedFile, options);
       setStats(optimizationStats);
+
+      // Show success toast
+      toast.success('Image optimized successfully', {
+        description: `Reduced by ${optimizationStats.compressionRatio}`,
+        icon: <CheckCircle className="h-4 w-4" />,
+        id: 'optimize-image',
+      });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to optimize image');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to optimize image';
+      setError(errorMessage);
+      toast.error('Optimization failed', {
+        description: errorMessage,
+        icon: <XCircle className="h-4 w-4" />,
+        id: 'optimize-image',
+      });
     } finally {
       setIsProcessing(false);
     }
@@ -140,6 +183,12 @@ export default function ImageOptimizerPage() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+
+    // Show download success toast
+    toast.success('Image downloaded', {
+      description: fileName,
+      icon: <Download className="h-4 w-4" />,
+    });
   };
 
   // Format file size
@@ -166,7 +215,7 @@ export default function ImageOptimizerPage() {
             className="flex items-center text-primary hover:text-primary/80 transition-colors"
           >
             <span>Goto Documentation</span>
-            <ArrowRight className="h-5 w-5 mr-2" />
+            <ArrowRight className="h-5 w-5 ml-2" />
           </Link>
         </div>
 

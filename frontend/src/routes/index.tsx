@@ -30,6 +30,7 @@ const Maintenance = lazy(() => import('@/pages/exceptions/Maintenance'));
 import DataFormatConverterDocs from '@/pages/documentation/DataFormatConverterDoc';
 import ImageOptimizerDocs from './../pages/documentation/ImageOptimizerDoc';
 import RegexPlaygroundDocs from '@/pages/documentation/RegexPlaygroundDocs';
+import DevTestPage from '@/pages/developers/Testing';
 
 // Centralized tool configurations
 export const devTools = [
@@ -351,6 +352,16 @@ export const routes: RouteObject[] = [
         element: (
           <Suspense fallback={<Loader />}>
             <RegexPlaygroundDocs />
+          </Suspense>
+        ),
+      },
+
+      // Dev tools
+      {
+        path: '/developers-test',
+        element: (
+          <Suspense fallback={<Loader />}>
+            <DevTestPage />
           </Suspense>
         ),
       },

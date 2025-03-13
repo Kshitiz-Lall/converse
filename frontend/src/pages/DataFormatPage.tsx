@@ -20,9 +20,13 @@ import {
   AlertCircle,
   Home,
   ArrowRight,
+  CheckCircle,
+  XCircle,
+  FileText,
 } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { toast } from 'sonner';
 
 // Import constants and utils
 import { APP_TEXT, DataFormat, EXAMPLE_DATA, FORMAT_OPTIONS } from './../../constants/converter';
@@ -49,18 +53,42 @@ export default function DataFormatPage() {
     setError(null);
     setIsConverting(true);
 
+    toast.loading('Converting data...', {
+      id: 'convert-data',
+      description: `${inputFormat.toUpperCase()} → ${outputFormat.toUpperCase()}`,
+    });
+
     try {
       const { result, error } = await convertData(inputText, inputFormat, outputFormat);
 
       if (error) {
         setError(error);
         setOutputText('');
+
+        toast.error('Conversion failed', {
+          id: 'convert-data',
+          description: error,
+          icon: <XCircle className="h-4 w-4" />,
+        });
       } else {
         setOutputText(result);
+
+        toast.success('Conversion complete', {
+          id: 'convert-data',
+          description: `${inputFormat.toUpperCase()} → ${outputFormat.toUpperCase()}`,
+          icon: <CheckCircle className="h-4 w-4" />,
+        });
       }
     } catch (err) {
-      setError('An unexpected error occurred during conversion');
+      const errorMessage = 'An unexpected error occurred during conversion';
+      setError(errorMessage);
       setOutputText('');
+
+      toast.error('Conversion failed', {
+        id: 'convert-data',
+        description: errorMessage,
+        icon: <XCircle className="h-4 w-4" />,
+      });
     } finally {
       setIsConverting(false);
     }
@@ -71,16 +99,40 @@ export default function DataFormatPage() {
     setError(null);
     setIsFormatting(true);
 
+    toast.loading('Formatting data...', {
+      id: 'format-data',
+      description: inputFormat.toUpperCase(),
+    });
+
     try {
       const { result, error } = await formatData(inputText, inputFormat);
 
       if (error) {
         setError(error);
+
+        toast.error('Formatting failed', {
+          id: 'format-data',
+          description: error,
+          icon: <XCircle className="h-4 w-4" />,
+        });
       } else {
         setInputText(result);
+
+        toast.success('Data formatted', {
+          id: 'format-data',
+          description: `${inputFormat.toUpperCase()} formatted successfully`,
+          icon: <CheckCircle className="h-4 w-4" />,
+        });
       }
     } catch (err) {
-      setError('An unexpected error occurred during formatting');
+      const errorMessage = 'An unexpected error occurred during formatting';
+      setError(errorMessage);
+
+      toast.error('Formatting failed', {
+        id: 'format-data',
+        description: errorMessage,
+        icon: <XCircle className="h-4 w-4" />,
+      });
     } finally {
       setIsFormatting(false);
     }
@@ -92,6 +144,10 @@ export default function DataFormatPage() {
 
     if (!file) return;
 
+    toast.loading('Reading file...', {
+      id: 'file-upload',
+    });
+
     const reader = new FileReader();
 
     reader.onload = e => {
@@ -102,7 +158,27 @@ export default function DataFormatPage() {
       const detectedFormat = detectFormatFromFilename(file.name);
       if (detectedFormat) {
         setInputFormat(detectedFormat);
+
+        toast.success('File loaded successfully', {
+          id: 'file-upload',
+          description: `${file.name} (${detectedFormat.toUpperCase()})`,
+          icon: <FileText className="h-4 w-4" />,
+        });
+      } else {
+        toast.success('File loaded successfully', {
+          id: 'file-upload',
+          description: file.name,
+          icon: <FileText className="h-4 w-4" />,
+        });
       }
+    };
+
+    reader.onerror = () => {
+      toast.error('Failed to read file', {
+        id: 'file-upload',
+        description: 'Please try another file',
+        icon: <XCircle className="h-4 w-4" />,
+      });
     };
 
     reader.readAsText(file);
@@ -113,23 +189,47 @@ export default function DataFormatPage() {
 
   // Handle file download
   const handleDownload = () => {
+    if (!outputText) return;
+
     downloadFile(outputText, outputFormat);
+
+    toast.success('File downloaded', {
+      description: `${outputFormat.toUpperCase()} file saved`,
+      icon: <Download className="h-4 w-4" />,
+    });
   };
 
   // Handle copy to clipboard
   const handleCopy = async () => {
+    if (!outputText) return;
+
     const success = await copyToClipboard(outputText);
     if (success) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+
+      toast.success('Copied to clipboard', {
+        icon: <Check className="h-4 w-4" />,
+      });
+    } else {
+      toast.error('Failed to copy to clipboard', {
+        icon: <XCircle className="h-4 w-4" />,
+      });
     }
   };
 
   // Clear input and output
   const handleClear = () => {
+    if (!inputText && !outputText) return;
+
     setInputText('');
     setOutputText('');
     setError(null);
+
+    toast.info('Content cleared', {
+      description: 'Input and output have been cleared',
+      icon: <Trash2 className="h-4 w-4" />,
+    });
   };
 
   // Swap input and output formats
@@ -141,11 +241,32 @@ export default function DataFormatPage() {
     if (outputText) {
       setInputText(outputText);
       setOutputText('');
+
+      toast.info('Formats swapped', {
+        description: `Input: ${outputFormat.toUpperCase()}, Output: ${inputFormat.toUpperCase()}`,
+        icon: <ArrowLeftRight className="h-4 w-4" />,
+      });
+    } else {
+      toast.info('Formats swapped', {
+        description: `Input: ${outputFormat.toUpperCase()}, Output: ${inputFormat.toUpperCase()}`,
+        icon: <ArrowLeftRight className="h-4 w-4" />,
+      });
     }
   };
 
+  // Load example data
+  const handleLoadExample = (format: DataFormat) => {
+    setInputFormat(format);
+    setInputText(EXAMPLE_DATA[format]);
+
+    toast.success('Example loaded', {
+      description: `${format.toUpperCase()} example loaded`,
+      icon: <FileText className="h-4 w-4" />,
+    });
+  };
+
   return (
-    <div className=" min-h-screen">
+    <div className="min-h-screen">
       <div className="container mx-auto p-4 py-8">
         <div className="flex items-center justify-between mb-8">
           <Link
@@ -161,7 +282,7 @@ export default function DataFormatPage() {
             className="flex items-center text-primary hover:text-primary/80 transition-colors"
           >
             <span>Goto Documentation</span>
-            <ArrowRight className="h-5 w-5 mr-2" />
+            <ArrowRight className="h-5 w-5 ml-2" />
           </Link>
         </div>
 
@@ -409,10 +530,7 @@ export default function DataFormatPage() {
                     <Button
                       key={option.value}
                       variant="outline"
-                      onClick={() => {
-                        setInputFormat(option.value);
-                        setInputText(EXAMPLE_DATA[option.value]);
-                      }}
+                      onClick={() => handleLoadExample(option.value)}
                       disabled={isConverting || isFormatting}
                     >
                       {option.label} Example

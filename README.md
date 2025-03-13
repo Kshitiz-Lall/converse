@@ -2,24 +2,35 @@
 
 DevToolkit is a comprehensive suite of web-based utilities designed to simplify common development tasks. The application features a modular architecture that allows for easy expansion with new tools over time.
 
-## 🚀 Features
+### 🚀 Features Currently implemented:
 
-### Currently implemented:
+## Developer Tools:
 
-- **Data Format Converter**: Convert between JSON, YAML, and XML formats with ease
-- Modern responsive interface built with React, TypeScript, and Tailwind CSS
-- Full-stack implementation with a Node.js/Express backend
-
-### Coming soon:
-
+- Data Format Converter
 - Image Optimizer
 - Regex Playground
-- Code Formatter
-- CSS Grid Generator
 - Cron Expression Builder
-- Markdown Editor
 - API Request Tester
-- File Diff Tool
+
+## AI Tools:
+
+### AI-Powered Features:
+
+- AI Debugger
+- AI Test Case Generator
+- Automated Code Refractoring
+- AI-Based Stack Overflow Search
+
+### Project & Collaboration Tools:
+
+- Issue & PR Summary Generator
+- Documentation Auto-Generator
+
+### DevOps & Automation Tools:
+
+- Dockerfile Generator & Optimizer
+- CI/CD Config Generator
+- Server Log Analyzer
 
 ## 🛠️ Technology Stack
 
@@ -38,3 +49,9 @@ DevToolkit is a comprehensive suite of web-based utilities designed to simplify 
 - TypeScript for type safety
 - RESTful API architecture
 - Middleware for error handling, logging, and security
+- (Planning) REDIS Integration for faster caching
+
+### AI
+
+- Python with FastAPI
+- RESTful API architecture

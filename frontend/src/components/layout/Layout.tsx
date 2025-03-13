@@ -6,10 +6,10 @@ export function Layout() {
     <div className="min-h-screen flex flex-col bg-gray-50">
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center">
-          <div className="mr-4 hidden md:flex">
-            <a className="mr-6 flex items-center space-x-2" href="/">
-              <span className="ml-4  hidden font-secondary text-2xl  sm:inline-block">
-                DevToolkit
+          <div className="mx-4 bg-neutral-900 rounded-[5px] hidden md:flex">
+            <a className="mr-4 flex items-center space-x-2" href="/">
+              <span className="ml-4 text-white  hidden font-secondary text-2xl  sm:inline-block">
+                Devtoolkit;
               </span>
             </a>
           </div>
