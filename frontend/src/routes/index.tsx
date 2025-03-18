@@ -1,15 +1,6 @@
-// src/routes/index.tsx
+// frontend/src/routes/index.tsx
 import { Layout } from '@/components/layout/Layout';
-import {
-  Clock,
-  FileCode2,
-  FileCog,
-  FileJson,
-  FileText,
-  Image,
-  RefreshCw,
-  Regex,
-} from 'lucide-react';
+import { Clock, FileCode2, FileCog, FileJson, FileText, Image, Regex, Zap } from 'lucide-react';
 import { lazy, Suspense } from 'react';
 import { RouteObject } from 'react-router-dom';
 
@@ -18,6 +9,7 @@ const Dashboard = lazy(() => import('@/pages/Dashboard'));
 const DataFormatPage = lazy(() => import('@/pages/DataFormatPage'));
 const ImageOptimizerPage = lazy(() => import('@/pages/ImageOptimizerPage'));
 const RegexPlaygroundPage = lazy(() => import('@/pages/RegexPlaygroundPage'));
+const ApiRequestTesterPage = lazy(() => import('@/pages/ApiRequestTesterPage'));
 
 // Exception pages
 const NotFound = lazy(() => import('@/pages/exceptions/NotFound'));
@@ -27,10 +19,10 @@ const Forbidden = lazy(() => import('@/pages/exceptions/Forbidden'));
 const Maintenance = lazy(() => import('@/pages/exceptions/Maintenance'));
 
 // Documentation pages
+import ApiRequestTesterDocs from '@/pages/documentation/ApiRequestTesterDocs';
 import DataFormatConverterDocs from '@/pages/documentation/DataFormatConverterDoc';
-import ImageOptimizerDocs from './../pages/documentation/ImageOptimizerDoc';
 import RegexPlaygroundDocs from '@/pages/documentation/RegexPlaygroundDocs';
-import DevTestPage from '@/pages/developers/Testing';
+import ImageOptimizerDocs from './../pages/documentation/ImageOptimizerDoc';
 
 // Centralized tool configurations
 export const devTools = [
@@ -59,19 +51,19 @@ export const devTools = [
     available: true,
   },
   {
+    id: 'api-tester',
+    title: 'API Request Tester',
+    description: 'Test API endpoints with different HTTP methods',
+    icon: <Zap className="h-10 w-10 mr-2" />,
+    path: '/api-tester',
+    available: true,
+  },
+  {
     id: 'cron-builder',
     title: 'Cron Expression Builder',
     description: 'Build and validate cron expressions',
     icon: <Clock className="h-10 w-10 mr-2" />,
     path: '/cron-builder',
-    available: false,
-  },
-  {
-    id: 'api-tester',
-    title: 'API Request Tester',
-    description: 'Test API endpoints with different HTTP methods',
-    icon: <RefreshCw className="h-10 w-10 mr-2" />,
-    path: '/api-tester',
     available: false,
   },
 ];
@@ -172,21 +164,6 @@ const Loader = () => (
   </div>
 );
 
-// Auth guard component - removed for now
-// Keeping this commented code for future reference when you're ready to add auth
-/*
-const RequireAuth = ({ children }: { children: JSX.Element }) => {
-  // Replace with your actual auth check logic
-  const isAuthenticated = localStorage.getItem('token') !== null;
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return children;
-};
-*/
-
 export const routes: RouteObject[] = [
   {
     path: '/',
@@ -226,6 +203,14 @@ export const routes: RouteObject[] = [
         ),
       },
       {
+        path: '/api-tester',
+        element: (
+          <Suspense fallback={<Loader />}>
+            <ApiRequestTesterPage />
+          </Suspense>
+        ),
+      },
+      {
         path: '/code-formatter',
         element: (
           <Suspense fallback={<Loader />}>
@@ -258,14 +243,6 @@ export const routes: RouteObject[] = [
         ),
       },
       {
-        path: '/api-tester',
-        element: (
-          <Suspense fallback={<Loader />}>
-            <Maintenance />
-          </Suspense>
-        ),
-      },
-      {
         path: '/file-diff',
         element: (
           <Suspense fallback={<Loader />}>
@@ -273,20 +250,6 @@ export const routes: RouteObject[] = [
           </Suspense>
         ),
       },
-
-      // Auth routes (inside layout for consistent navigation)
-      // {
-      //   path: '/login',
-      //   element: <LoginPage />,
-      // },
-      // {
-      //   path: '/signup',
-      //   element: <SignupPage />,
-      // },
-      // {
-      //   path: '/forgot-password',
-      //   element: <div>Forgot Password Page</div>,
-      // },
 
       // Exception routes
       {
@@ -355,15 +318,9 @@ export const routes: RouteObject[] = [
           </Suspense>
         ),
       },
-
-      // Dev tools
       {
-        path: '/developers-test',
-        element: (
-          <Suspense fallback={<Loader />}>
-            <DevTestPage />
-          </Suspense>
-        ),
+        path: '/api-tester/docs',
+        element: <Suspense fallback={<Loader />}>{<ApiRequestTesterDocs />}</Suspense>,
       },
     ],
   },
