@@ -4,7 +4,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,

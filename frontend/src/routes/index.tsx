@@ -24,6 +24,10 @@ import DataFormatConverterDocs from '@/pages/documentation/DataFormatConverterDo
 import RegexPlaygroundDocs from '@/pages/documentation/RegexPlaygroundDocs';
 import ImageOptimizerDocs from './../pages/documentation/ImageOptimizerDoc';
 
+import LandingPage from '@/pages/LandingPage';
+import SignupPage from '@/pages/auth/SignupPage';
+import LoginPage from '@/pages/auth/LoginPage';
+
 // Centralized tool configurations
 export const devTools = [
   {
@@ -172,6 +176,30 @@ export const routes: RouteObject[] = [
       // Main application routes
       {
         path: '/',
+        element: (
+          <Suspense fallback={<Loader />}>
+            <LandingPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: '/login',
+        element: (
+          <Suspense fallback={<Loader />}>
+            <LoginPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: '/signup',
+        element: (
+          <Suspense fallback={<Loader />}>
+            <SignupPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: '/dashboard',
         element: (
           <Suspense fallback={<Loader />}>
             <Dashboard />
