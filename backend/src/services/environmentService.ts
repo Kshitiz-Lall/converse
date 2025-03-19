@@ -1,9 +1,4 @@
-// backend/src/services/environmentService.ts
-import fs from "fs/promises";
-import path from "path";
-
-// Define environment file path
-const ENVIRONMENTS_FILE = path.join(__dirname, "../../data/environments.json");
+import Environment from "../models/Environment";
 
 // Define environment interfaces
 export interface Environment {
@@ -16,43 +11,12 @@ export interface Environment {
 }
 
 /**
- * Ensure the environments file and directory exist
- */
-const ensureEnvironmentsFile = async (): Promise<void> => {
-  try {
-    // Ensure directory exists
-    const directory = path.dirname(ENVIRONMENTS_FILE);
-    await fs.mkdir(directory, { recursive: true });
-
-    // Check if file exists
-    try {
-      await fs.access(ENVIRONMENTS_FILE);
-    } catch (error) {
-      // Create empty environments file if it doesn't exist
-      await fs.writeFile(
-        ENVIRONMENTS_FILE,
-        JSON.stringify({
-          environments: [],
-        })
-      );
-    }
-  } catch (error) {
-    console.error("Error ensuring environments file exists:", error);
-    throw error;
-  }
-};
-
-/**
  * Get all environments
  */
 export const getEnvironments = async (): Promise<Environment[]> => {
   try {
-    await ensureEnvironmentsFile();
-
-    const content = await fs.readFile(ENVIRONMENTS_FILE, "utf-8");
-    const data = JSON.parse(content);
-
-    return data.environments || [];
+    const environments = await Environment.find({}).lean();
+    return environments as Environment[];
   } catch (error) {
     console.error("Error getting environments:", error);
     throw error;
@@ -64,8 +28,8 @@ export const getEnvironments = async (): Promise<Environment[]> => {
  */
 export const getActiveEnvironment = async (): Promise<Environment | null> => {
   try {
-    const environments = await getEnvironments();
-    return environments.find((env) => env.isActive) || null;
+    const activeEnv = await Environment.findOne({ isActive: true }).lean();
+    return activeEnv as Environment | null;
   } catch (error) {
     console.error("Error getting active environment:", error);
     throw error;
@@ -80,31 +44,22 @@ export const createEnvironment = async (
   variables: Record<string, string> = {}
 ): Promise<Environment> => {
   try {
-    await ensureEnvironmentsFile();
-
-    const content = await fs.readFile(ENVIRONMENTS_FILE, "utf-8");
-    const data = JSON.parse(content);
-
-    const environments = data.environments || [];
+    // Check if this will be the first environment (to set as active)
+    const count = await Environment.countDocuments();
+    const isActive = count === 0;
 
     // Create a new environment with a unique ID
     const newEnvironment: Environment = {
       id: generateId(),
       name,
       variables,
-      isActive: environments.length === 0, // Make active if it's the first environment
+      isActive,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
-    // Add the new environment
-    environments.push(newEnvironment);
-
-    // Update the file
-    await fs.writeFile(
-      ENVIRONMENTS_FILE,
-      JSON.stringify({ environments }, null, 2)
-    );
+    // Save to MongoDB
+    await Environment.create(newEnvironment);
 
     return newEnvironment;
   } catch (error) {
@@ -121,36 +76,21 @@ export const updateEnvironment = async (
   updates: { name?: string; variables?: Record<string, string> }
 ): Promise<Environment | null> => {
   try {
-    await ensureEnvironmentsFile();
+    const environment = await Environment.findOne({ id });
 
-    const content = await fs.readFile(ENVIRONMENTS_FILE, "utf-8");
-    const data = JSON.parse(content);
-
-    const environments = data.environments || [];
-
-    // Find the environment to update
-    const index = environments.findIndex((env: Environment) => env.id === id);
-
-    if (index === -1) {
+    if (!environment) {
       return null; // Environment not found
     }
 
-    // Update the environment
-    const updatedEnvironment = {
-      ...environments[index],
-      ...updates,
-      updatedAt: new Date(),
-    };
+    // Update fields
+    if (updates.name) environment.name = updates.name;
+    if (updates.variables) environment.variables = updates.variables;
+    environment.updatedAt = new Date();
 
-    environments[index] = updatedEnvironment;
+    // Save changes
+    await environment.save();
 
-    // Update the file
-    await fs.writeFile(
-      ENVIRONMENTS_FILE,
-      JSON.stringify({ environments }, null, 2)
-    );
-
-    return updatedEnvironment;
+    return environment.toObject() as Environment;
   } catch (error) {
     console.error("Error updating environment:", error);
     throw error;
@@ -162,36 +102,27 @@ export const updateEnvironment = async (
  */
 export const deleteEnvironment = async (id: string): Promise<boolean> => {
   try {
-    await ensureEnvironmentsFile();
+    // Get the environment to check if it's active
+    const environment = await Environment.findOne({ id });
 
-    const content = await fs.readFile(ENVIRONMENTS_FILE, "utf-8");
-    const data = JSON.parse(content);
-
-    const environments = data.environments || [];
-
-    // Find the environment to delete
-    const index = environments.findIndex((env: Environment) => env.id === id);
-
-    if (index === -1) {
+    if (!environment) {
       return false; // Environment not found
     }
 
-    // Check if it's the active environment
-    const isActive = environments[index].isActive;
+    // Check if it was active
+    const wasActive = environment.isActive;
 
-    // Remove the environment
-    environments.splice(index, 1);
+    // Delete the environment
+    await Environment.deleteOne({ id });
 
-    // If it was active and there are other environments, make the first one active
-    if (isActive && environments.length > 0) {
-      environments[0].isActive = true;
+    // If it was active, make another environment active
+    if (wasActive) {
+      const remainingEnv = await Environment.findOne();
+      if (remainingEnv) {
+        remainingEnv.isActive = true;
+        await remainingEnv.save();
+      }
     }
-
-    // Update the file
-    await fs.writeFile(
-      ENVIRONMENTS_FILE,
-      JSON.stringify({ environments }, null, 2)
-    );
 
     return true;
   } catch (error) {
@@ -207,35 +138,17 @@ export const setActiveEnvironment = async (
   id: string
 ): Promise<Environment | null> => {
   try {
-    await ensureEnvironmentsFile();
+    // First, clear active status for all environments
+    await Environment.updateMany({}, { isActive: false });
 
-    const content = await fs.readFile(ENVIRONMENTS_FILE, "utf-8");
-    const data = JSON.parse(content);
-
-    const environments = data.environments || [];
-
-    // Reset active status for all environments
-    environments.forEach((env: Environment) => {
-      env.isActive = false;
-    });
-
-    // Find the environment to make active
-    const index = environments.findIndex((env: Environment) => env.id === id);
-
-    if (index === -1) {
-      return null; // Environment not found
-    }
-
-    // Set the environment as active
-    environments[index].isActive = true;
-
-    // Update the file
-    await fs.writeFile(
-      ENVIRONMENTS_FILE,
-      JSON.stringify({ environments }, null, 2)
+    // Then, set the chosen environment as active
+    const environment = await Environment.findOneAndUpdate(
+      { id },
+      { isActive: true, updatedAt: new Date() },
+      { new: true }
     );
 
-    return environments[index];
+    return environment ? (environment.toObject() as Environment) : null;
   } catch (error) {
     console.error("Error setting active environment:", error);
     throw error;

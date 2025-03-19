@@ -11,57 +11,48 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { useForm } from 'react-hook-form';
+import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Loader2 } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 // Define the form schema using Zod
-const formSchema = z
-  .object({
-    fullName: z.string().min(2, {
-      message: 'Full name must be at least 2 characters',
-    }),
-    email: z.string().email({ message: 'Please enter a valid email address' }),
-    password: z.string().min(8, {
-      message: 'Password must be at least 8 characters long',
-    }),
-    confirmPassword: z.string(),
-    acceptTerms: z.boolean().refine(val => val === true, {
-      message: 'You must accept the terms and conditions',
-    }),
-  })
-  .refine(data => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ['confirmPassword'],
-  });
+const formSchema = z.object({
+  name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
+  email: z.string().email({ message: 'Please enter a valid email address' }),
+  password: z.string().min(8, {
+    message: 'Password must be at least 8 characters long',
+  }),
+  phone: z.string().optional(),
+  address: z.string().optional(),
+});
 
 // Infer the type from the schema
 type SignupFormValues = z.infer<typeof formSchema>;
 
 export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   // Initialize the form
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      fullName: '',
+      name: '',
       email: '',
       password: '',
-      confirmPassword: '',
-      acceptTerms: false,
+      phone: '',
+      address: '',
     },
   });
 
@@ -69,17 +60,42 @@ export default function SignupPage() {
   const onSubmit = async (data: SignupFormValues) => {
     try {
       setIsLoading(true);
+      setError(null);
 
-      // TODO: Implement actual signup logic here
-      console.log('Signup submitted with:', data);
+      // Actual signup API call
+      const response = await fetch('http://localhost:3000/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const result = await response.json();
 
-      // If signup successful, navigate to login or onboarding
+      if (!response.ok) {
+        throw new Error(result.message || 'Registration failed');
+      }
+
+      // Successfully registered
+      console.log('Registration successful:', result);
+
+      // Show success toast
+      toast.success('Registration Successful', {
+        description: 'Your account has been created! Please login.',
+      });
+
+      // Navigate to login page
       navigate('/login');
     } catch (error) {
-      console.error('Signup failed:', error);
+      console.error('Registration failed:', error);
+      setError(error instanceof Error ? error.message : 'An unexpected error occurred');
+
+      // Show error toast
+      toast.error('Registration Failed', {
+        description:
+          error instanceof Error ? error.message : 'Could not create account. Please try again.',
+      });
     } finally {
       setIsLoading(false);
     }
@@ -89,22 +105,26 @@ export default function SignupPage() {
     <div className="flex h-screen w-full items-center justify-center">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader>
-          <CardTitle className="text-2xl text-center">Create Account</CardTitle>
+          <CardTitle className="text-2xl text-center">Create an Account</CardTitle>
           <CardDescription className="text-center">
-            Sign up to get started with our platform
+            Sign up to get started with our service
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              {error && (
+                <div className="p-3 text-sm bg-red-50 text-red-600 rounded-md mb-4">{error}</div>
+              )}
+
               <FormField
                 control={form.control}
-                name="fullName"
+                name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Full Name</FormLabel>
+                    <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter your full name" {...field} disabled={isLoading} />
+                      <Input placeholder="John Doe" {...field} disabled={isLoading} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -118,12 +138,7 @@ export default function SignupPage() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="name@example.com"
-                        type="email"
-                        {...field}
-                        disabled={isLoading}
-                      />
+                      <Input placeholder="name@example.com" {...field} disabled={isLoading} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -144,7 +159,6 @@ export default function SignupPage() {
                         disabled={isLoading}
                       />
                     </FormControl>
-                    <FormDescription>Must be at least 8 characters</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -152,17 +166,12 @@ export default function SignupPage() {
 
               <FormField
                 control={form.control}
-                name="confirmPassword"
+                name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
+                    <FormLabel>Phone (Optional)</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="Confirm your password"
-                        {...field}
-                        disabled={isLoading}
-                      />
+                      <Input placeholder="(123) 456-7890" {...field} disabled={isLoading} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -171,34 +180,19 @@ export default function SignupPage() {
 
               <FormField
                 control={form.control}
-                name="acceptTerms"
+                name="address"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                  <FormItem>
+                    <FormLabel>Address (Optional)</FormLabel>
                     <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        disabled={isLoading}
-                      />
+                      <Input placeholder="Your address" {...field} disabled={isLoading} />
                     </FormControl>
-                    <div className="space-y-1 leading-none">
-                      <FormLabel>Terms and Conditions</FormLabel>
-                      <FormDescription>
-                        I agree to the{' '}
-                        <a href="/terms" className="text-primary hover:underline">
-                          terms of service
-                        </a>{' '}
-                        and{' '}
-                        <a href="/privacy" className="text-primary hover:underline">
-                          privacy policy
-                        </a>
-                      </FormDescription>
-                    </div>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" className="w-full mt-6" disabled={isLoading}>
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

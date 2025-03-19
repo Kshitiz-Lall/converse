@@ -1,10 +1,7 @@
-import fs from "fs/promises";
-import path from "path";
+import CollectionModel from "../models/Collection";
+import { ICollection, IRequestItem } from "../models/Collection"; // Import the interfaces from your model
 
-// Define collections file path
-const COLLECTIONS_FILE = path.join(__dirname, "../../data/collections.json");
-
-// Define collection interfaces
+// Define plain object interfaces for service layer (without Document properties)
 export interface RequestItem {
   id: string;
   name: string;
@@ -25,6 +22,7 @@ export interface Collection {
   updatedAt: Date;
 }
 
+// Postman and Insomnia interfaces
 interface PostmanHeader {
   key: string;
   value: string;
@@ -50,54 +48,18 @@ interface PostmanRequest {
   };
 }
 
-interface PostmanParam {
-  key: string;
-  value: string;
-}
-
 interface InsomniaParam {
   name: string;
   value: string;
 }
 
 /**
- * Ensure the collections file and directory exist
- */
-const ensureCollectionsFile = async (): Promise<void> => {
-  try {
-    // Ensure directory exists
-    const directory = path.dirname(COLLECTIONS_FILE);
-    await fs.mkdir(directory, { recursive: true });
-
-    // Check if file exists
-    try {
-      await fs.access(COLLECTIONS_FILE);
-    } catch (error) {
-      // Create empty collections file if it doesn't exist
-      await fs.writeFile(
-        COLLECTIONS_FILE,
-        JSON.stringify({
-          collections: [],
-        })
-      );
-    }
-  } catch (error) {
-    console.error("Error ensuring collections file exists:", error);
-    throw error;
-  }
-};
-
-/**
  * Get all collections
  */
 export const getCollections = async (): Promise<Collection[]> => {
   try {
-    await ensureCollectionsFile();
-
-    const content = await fs.readFile(COLLECTIONS_FILE, "utf-8");
-    const data = JSON.parse(content);
-
-    return data.collections || [];
+    const collections = await CollectionModel.find({}).lean();
+    return collections as unknown as Collection[];
   } catch (error) {
     console.error("Error getting collections:", error);
     throw error;
@@ -111,8 +73,8 @@ export const getCollectionById = async (
   id: string
 ): Promise<Collection | null> => {
   try {
-    const collections = await getCollections();
-    return collections.find((collection) => collection.id === id) || null;
+    const collection = await CollectionModel.findOne({ id }).lean();
+    return collection as unknown as Collection | null;
   } catch (error) {
     console.error("Error getting collection:", error);
     throw error;
@@ -127,15 +89,8 @@ export const createCollection = async (
   description?: string
 ): Promise<Collection> => {
   try {
-    await ensureCollectionsFile();
-
-    const content = await fs.readFile(COLLECTIONS_FILE, "utf-8");
-    const data = JSON.parse(content);
-
-    const collections = data.collections || [];
-
     // Create a new collection with a unique ID
-    const newCollection: Collection = {
+    const newCollectionData: Collection = {
       id: generateId(),
       name,
       description,
@@ -144,16 +99,11 @@ export const createCollection = async (
       updatedAt: new Date(),
     };
 
-    // Add the new collection
-    collections.push(newCollection);
+    // Save to MongoDB - cast to any to bypass TypeScript errors
+    const created = await CollectionModel.create(newCollectionData as any);
 
-    // Update the file
-    await fs.writeFile(
-      COLLECTIONS_FILE,
-      JSON.stringify({ collections }, null, 2)
-    );
-
-    return newCollection;
+    // Return as plain object
+    return created.toObject() as unknown as Collection;
   } catch (error) {
     console.error("Error creating collection:", error);
     throw error;
@@ -168,36 +118,22 @@ export const updateCollection = async (
   updates: { name?: string; description?: string }
 ): Promise<Collection | null> => {
   try {
-    await ensureCollectionsFile();
+    const collection = await CollectionModel.findOne({ id });
 
-    const content = await fs.readFile(COLLECTIONS_FILE, "utf-8");
-    const data = JSON.parse(content);
-
-    const collections = data.collections || [];
-
-    // Find the collection to update
-    const index = collections.findIndex((col: Collection) => col.id === id);
-
-    if (index === -1) {
+    if (!collection) {
       return null; // Collection not found
     }
 
-    // Update the collection
-    const updatedCollection = {
-      ...collections[index],
-      ...updates,
-      updatedAt: new Date(),
-    };
+    // Update fields
+    if (updates.name) collection.name = updates.name;
+    if (updates.description !== undefined)
+      collection.description = updates.description;
+    collection.updatedAt = new Date();
 
-    collections[index] = updatedCollection;
+    // Save changes
+    await collection.save();
 
-    // Update the file
-    await fs.writeFile(
-      COLLECTIONS_FILE,
-      JSON.stringify({ collections }, null, 2)
-    );
-
-    return updatedCollection;
+    return collection.toObject() as unknown as Collection;
   } catch (error) {
     console.error("Error updating collection:", error);
     throw error;
@@ -209,30 +145,8 @@ export const updateCollection = async (
  */
 export const deleteCollection = async (id: string): Promise<boolean> => {
   try {
-    await ensureCollectionsFile();
-
-    const content = await fs.readFile(COLLECTIONS_FILE, "utf-8");
-    const data = JSON.parse(content);
-
-    const collections = data.collections || [];
-
-    // Find the collection to delete
-    const index = collections.findIndex((col: Collection) => col.id === id);
-
-    if (index === -1) {
-      return false; // Collection not found
-    }
-
-    // Remove the collection
-    collections.splice(index, 1);
-
-    // Update the file
-    await fs.writeFile(
-      COLLECTIONS_FILE,
-      JSON.stringify({ collections }, null, 2)
-    );
-
-    return true;
+    const result = await CollectionModel.deleteOne({ id });
+    return result.deletedCount > 0;
   } catch (error) {
     console.error("Error deleting collection:", error);
     throw error;
@@ -247,19 +161,9 @@ export const addRequestToCollection = async (
   request: Omit<RequestItem, "id">
 ): Promise<RequestItem | null> => {
   try {
-    await ensureCollectionsFile();
+    const collection = await CollectionModel.findOne({ id: collectionId });
 
-    const content = await fs.readFile(COLLECTIONS_FILE, "utf-8");
-    const data = JSON.parse(content);
-
-    const collections = data.collections || [];
-
-    // Find the collection
-    const index = collections.findIndex(
-      (col: Collection) => col.id === collectionId
-    );
-
-    if (index === -1) {
+    if (!collection) {
       return null; // Collection not found
     }
 
@@ -269,15 +173,10 @@ export const addRequestToCollection = async (
       ...request,
     };
 
-    // Add the request to the collection
-    collections[index].requests.push(newRequest);
-    collections[index].updatedAt = new Date();
-
-    // Update the file
-    await fs.writeFile(
-      COLLECTIONS_FILE,
-      JSON.stringify({ collections }, null, 2)
-    );
+    // Add to collection - convert to IRequestItem format that Mongoose expects
+    collection.requests.push(newRequest as unknown as IRequestItem);
+    collection.updatedAt = new Date();
+    await collection.save();
 
     return newRequest;
   } catch (error) {
@@ -295,47 +194,36 @@ export const updateRequestInCollection = async (
   updates: Partial<Omit<RequestItem, "id">>
 ): Promise<RequestItem | null> => {
   try {
-    await ensureCollectionsFile();
+    const collection = await CollectionModel.findOne({ id: collectionId });
 
-    const content = await fs.readFile(COLLECTIONS_FILE, "utf-8");
-    const data = JSON.parse(content);
-
-    const collections = data.collections || [];
-
-    // Find the collection
-    const colIndex = collections.findIndex(
-      (col: Collection) => col.id === collectionId
-    );
-
-    if (colIndex === -1) {
+    if (!collection) {
       return null; // Collection not found
     }
 
-    // Find the request
-    const reqIndex = collections[colIndex].requests.findIndex(
-      (req: RequestItem) => req.id === requestId
+    // Find the request index
+    const reqIndex = collection.requests.findIndex(
+      (req) => req.id === requestId
     );
 
     if (reqIndex === -1) {
       return null; // Request not found
     }
 
-    // Update the request
+    // Get the existing request
+    const existingRequest = collection.requests[reqIndex];
+
+    // Create updated request by merging existing with updates
     const updatedRequest = {
-      ...collections[colIndex].requests[reqIndex],
+      ...existingRequest.toObject(),
       ...updates,
     };
 
-    collections[colIndex].requests[reqIndex] = updatedRequest;
-    collections[colIndex].updatedAt = new Date();
+    // Update request in collection
+    collection.requests[reqIndex] = updatedRequest as unknown as IRequestItem;
+    collection.updatedAt = new Date();
+    await collection.save();
 
-    // Update the file
-    await fs.writeFile(
-      COLLECTIONS_FILE,
-      JSON.stringify({ collections }, null, 2)
-    );
-
-    return updatedRequest;
+    return updatedRequest as RequestItem;
   } catch (error) {
     console.error("Error updating request in collection:", error);
     throw error;
@@ -350,25 +238,15 @@ export const deleteRequestFromCollection = async (
   requestId: string
 ): Promise<boolean> => {
   try {
-    await ensureCollectionsFile();
+    const collection = await CollectionModel.findOne({ id: collectionId });
 
-    const content = await fs.readFile(COLLECTIONS_FILE, "utf-8");
-    const data = JSON.parse(content);
-
-    const collections = data.collections || [];
-
-    // Find the collection
-    const colIndex = collections.findIndex(
-      (col: Collection) => col.id === collectionId
-    );
-
-    if (colIndex === -1) {
+    if (!collection) {
       return false; // Collection not found
     }
 
-    // Find the request
-    const reqIndex = collections[colIndex].requests.findIndex(
-      (req: RequestItem) => req.id === requestId
+    // Find the request index
+    const reqIndex = collection.requests.findIndex(
+      (req) => req.id === requestId
     );
 
     if (reqIndex === -1) {
@@ -376,14 +254,9 @@ export const deleteRequestFromCollection = async (
     }
 
     // Remove the request
-    collections[colIndex].requests.splice(reqIndex, 1);
-    collections[colIndex].updatedAt = new Date();
-
-    // Update the file
-    await fs.writeFile(
-      COLLECTIONS_FILE,
-      JSON.stringify({ collections }, null, 2)
-    );
+    collection.requests.splice(reqIndex, 1);
+    collection.updatedAt = new Date();
+    await collection.save();
 
     return true;
   } catch (error) {
@@ -461,7 +334,7 @@ const importPostmanCollection = async (
       // Process headers
       if (item.request.header && Array.isArray(item.request.header)) {
         for (const header of item.request.header) {
-          if (request.headers && typeof header.key === 'string') {
+          if (request.headers && typeof header.key === "string") {
             request.headers[header.key] = header.value;
           }
         }
@@ -481,7 +354,7 @@ const importPostmanCollection = async (
         ) {
           const formData: Record<string, string> = {};
           for (const param of item.request.body.formdata) {
-            if (typeof param.key === 'string') {
+            if (typeof param.key === "string") {
               formData[param.key] = param.value;
             }
           }
@@ -529,7 +402,7 @@ const importInsomniaCollection = async (
     // Process headers
     if (item.headers && Array.isArray(item.headers)) {
       for (const header of item.headers) {
-        if (request.headers && typeof header.name === 'string') {
+        if (request.headers && typeof header.name === "string") {
           request.headers[header.name] = header.value;
         }
       }
@@ -546,7 +419,7 @@ const importInsomniaCollection = async (
       } else if (item.body.params && Array.isArray(item.body.params)) {
         const formData: Record<string, string> = {};
         for (const param of item.body.params) {
-          if (typeof param.name === 'string') {
+          if (typeof param.name === "string") {
             formData[param.name] = param.value;
           }
         }
@@ -607,7 +480,10 @@ export const exportCollectionToPostman = async (id: string): Promise<any> => {
         if (req.body) {
           postmanRequest.request.body = {
             mode: "raw",
-            raw: typeof req.body === "string" ? req.body : JSON.stringify(req.body, null, 2),
+            raw:
+              typeof req.body === "string"
+                ? req.body
+                : JSON.stringify(req.body, null, 2),
           };
 
           // Add options for JSON content

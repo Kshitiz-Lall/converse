@@ -27,6 +27,7 @@ import ImageOptimizerDocs from './../pages/documentation/ImageOptimizerDoc';
 import LandingPage from '@/pages/LandingPage';
 import SignupPage from '@/pages/auth/SignupPage';
 import LoginPage from '@/pages/auth/LoginPage';
+import RequireAuth from '@/context/RequireAuth';
 
 // Centralized tool configurations
 export const devTools = [
@@ -201,9 +202,11 @@ export const routes: RouteObject[] = [
       {
         path: '/dashboard',
         element: (
-          <Suspense fallback={<Loader />}>
-            <Dashboard />
-          </Suspense>
+          <RequireAuth>
+            <Suspense fallback={<Loader />}>
+              <Dashboard />
+            </Suspense>
+          </RequireAuth>
         ),
       },
       {
@@ -217,65 +220,51 @@ export const routes: RouteObject[] = [
       {
         path: '/image-optimizer',
         element: (
-          <Suspense fallback={<Loader />}>
-            <ImageOptimizerPage />
-          </Suspense>
+          <RequireAuth>
+            <Suspense fallback={<Loader />}>
+              <ImageOptimizerPage />
+            </Suspense>
+          </RequireAuth>
         ),
       },
       {
         path: '/regex-playground',
         element: (
-          <Suspense fallback={<Loader />}>
-            <RegexPlaygroundPage />
-          </Suspense>
+          <RequireAuth>
+            <Suspense fallback={<Loader />}>
+              <RegexPlaygroundPage />
+            </Suspense>
+          </RequireAuth>
         ),
       },
       {
         path: '/api-tester',
         element: (
-          <Suspense fallback={<Loader />}>
-            <ApiRequestTesterPage />
-          </Suspense>
+          <RequireAuth>
+            <Suspense fallback={<Loader />}>
+              <ApiRequestTesterPage />
+            </Suspense>
+          </RequireAuth>
         ),
       },
       {
         path: '/code-formatter',
         element: (
-          <Suspense fallback={<Loader />}>
-            <Maintenance />
-          </Suspense>
-        ),
-      },
-      {
-        path: '/grid-generator',
-        element: (
-          <Suspense fallback={<Loader />}>
-            <Maintenance />
-          </Suspense>
+          <RequireAuth>
+            <Suspense fallback={<Loader />}>
+              <Maintenance />
+            </Suspense>
+          </RequireAuth>
         ),
       },
       {
         path: '/cron-builder',
         element: (
-          <Suspense fallback={<Loader />}>
-            <Maintenance />
-          </Suspense>
-        ),
-      },
-      {
-        path: '/markdown',
-        element: (
-          <Suspense fallback={<Loader />}>
-            <Maintenance />
-          </Suspense>
-        ),
-      },
-      {
-        path: '/file-diff',
-        element: (
-          <Suspense fallback={<Loader />}>
-            <Maintenance />
-          </Suspense>
+          <RequireAuth>
+            <Suspense fallback={<Loader />}>
+              <Maintenance />
+            </Suspense>
+          </RequireAuth>
         ),
       },
 
@@ -325,30 +314,42 @@ export const routes: RouteObject[] = [
       {
         path: '/image-optimizer/docs',
         element: (
-          <Suspense fallback={<Loader />}>
-            <ImageOptimizerDocs />
-          </Suspense>
+          <RequireAuth>
+            <Suspense fallback={<Loader />}>
+              <ImageOptimizerDocs />
+            </Suspense>
+          </RequireAuth>
         ),
       },
       {
         path: '/data-format/docs',
         element: (
-          <Suspense fallback={<Loader />}>
-            <DataFormatConverterDocs />
-          </Suspense>
+          <RequireAuth>
+            <Suspense fallback={<Loader />}>
+              <DataFormatConverterDocs />
+            </Suspense>
+          </RequireAuth>
         ),
       },
       {
         path: '/regex-playground/docs',
         element: (
-          <Suspense fallback={<Loader />}>
-            <RegexPlaygroundDocs />
-          </Suspense>
+          <RequireAuth>
+            <Suspense fallback={<Loader />}>
+              <RegexPlaygroundDocs />
+            </Suspense>
+          </RequireAuth>
         ),
       },
       {
         path: '/api-tester/docs',
-        element: <Suspense fallback={<Loader />}>{<ApiRequestTesterDocs />}</Suspense>,
+        element: (
+          <RequireAuth>
+            <Suspense fallback={<Loader />}>
+              <ApiRequestTesterDocs />
+            </Suspense>
+          </RequireAuth>
+        ),
       },
     ],
   },

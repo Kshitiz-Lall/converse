@@ -75,23 +75,6 @@ export function NavMenu() {
           </NavigationMenuContent>
         </NavigationMenuItem>
 
-        {/* <NavigationMenuItem>
-          <Link to="/login">
-            <NavigationMenuLink
-              className={navigationMenuTriggerStyle()}
-              active={location.pathname === '/login'}
-            >
-              Login
-            </NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <Link to="/login">
-            <NavigationMenuLink>
-              <ModeToggle />
-            </NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem> */}
       </NavigationMenuList>
     </NavigationMenu>
   );
