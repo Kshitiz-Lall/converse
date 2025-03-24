@@ -33,6 +33,9 @@ import RequireAuth from '@/context/RequireAuth';
 // Developer pages
 import Testing from '@/pages/developers/Testing';
 
+// User page
+import Profile from '@/pages/ProfilePage';
+
 // Centralized tool configurations
 export const devTools = [
   {
@@ -361,6 +364,18 @@ export const routes: RouteObject[] = [
           <RequireAuth>
             <Suspense fallback={<Loader />}>
               <Testing />
+            </Suspense>
+          </RequireAuth>
+        ),
+      },
+
+      // Developer tools
+      {
+        path: '/profile',
+        element: (
+          <RequireAuth>
+            <Suspense fallback={<Loader />}>
+              <Profile />
             </Suspense>
           </RequireAuth>
         ),

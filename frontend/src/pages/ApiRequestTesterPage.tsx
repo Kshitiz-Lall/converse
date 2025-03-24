@@ -1,35 +1,22 @@
 // frontend/src/pages/ApiRequestTesterPage.tsx
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import {
-  Home,
-  ArrowRight,
-  Send,
-  Download,
-  Save,
-  History,
-  Folder,
-  Settings,
-  Play,
-  PauseCircle,
-  Clock,
-  RefreshCw,
-} from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ArrowRight, Folder, History, Home, RefreshCw, Save, Send, Settings } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 // Import components
-import RequestForm from '@/components/api-tester/RequestForm';
-import ResponseViewer from '@/components/api-tester/ResponseViewer';
-import HistoryPanel from '@/components/api-tester/HistoryPanel';
 import CollectionsPanel from '@/components/api-tester/CollectionsPanel';
 import EnvironmentsPanel from '@/components/api-tester/EnvironmentsPanel';
+import HistoryPanel from '@/components/api-tester/HistoryPanel';
+import RequestForm from '@/components/api-tester/RequestForm';
+import ResponseViewer from '@/components/api-tester/ResponseViewer';
 
 // Types
-import { ApiRequest, ApiResponse, HistoryItem, Collection, Environment } from '@/types/apiTester';
+import { ApiRequest, ApiResponse, Collection, Environment, HistoryItem } from '@/types/apiTester';
 
 // API Services
-import { executeRequest, getHistory, clearHistory } from '@/services/apiTesterService';
+import { clearHistory, executeRequest, getHistory } from '@/services/apiTesterService';
 
 export default function ApiRequestTesterPage() {
   // Main states
