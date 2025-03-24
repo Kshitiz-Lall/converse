@@ -23,6 +23,7 @@ import {
   CheckCircle,
   XCircle,
   FileText,
+  LogIn as LoginIcon,
 } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -47,6 +48,8 @@ export default function DataFormatPage() {
   const [copied, setCopied] = useState(false);
   const [isConverting, setIsConverting] = useState(false);
   const [isFormatting, setIsFormatting] = useState(false);
+
+  const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
 
   // Process the conversion
   const handleConvert = async () => {
@@ -269,13 +272,23 @@ export default function DataFormatPage() {
     <div className="min-h-screen">
       <div className="container mx-auto p-4 py-8">
         <div className="flex items-center justify-between mb-8">
-          <Link
-            to="/"
-            className="flex items-center text-primary hover:text-primary/80 transition-colors"
-          >
-            <Home className="h-5 w-5 mr-2" />
-            <span>Back to Dashboard</span>
-          </Link>
+          {token ? (
+            <Link
+              to="/dashboard"
+              className="flex items-center text-primary hover:text-primary/80 transition-colors"
+            >
+              <Home className="h-5 w-5 mr-2" />
+              <span>Back to Dashboard</span>
+            </Link>
+          ) : (
+            <Link
+              to="/login"
+              className="flex items-center text-primary hover:text-primary/80 transition-colors"
+            >
+              <LoginIcon className="h-5 w-5 mr-2" />
+              <span>Sign In</span>
+            </Link>
+          )}
           <h1 className="text-3xl font-bold text-center">{APP_TEXT.title}</h1>
           <Link
             to="/data-format/docs"

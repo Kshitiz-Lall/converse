@@ -126,7 +126,7 @@ export default function ApiRequestTesterPage() {
       <div className="container mx-auto p-4 py-8">
         <div className="flex items-center justify-between mb-4">
           <Link
-            to="/"
+            to="/dashboard"
             className="flex items-center text-primary hover:text-primary/80 transition-colors"
           >
             <Home className="h-5 w-5 mr-2" />

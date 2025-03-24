@@ -24,10 +24,14 @@ import DataFormatConverterDocs from '@/pages/documentation/DataFormatConverterDo
 import RegexPlaygroundDocs from '@/pages/documentation/RegexPlaygroundDocs';
 import ImageOptimizerDocs from './../pages/documentation/ImageOptimizerDoc';
 
+// Auth pages
 import LandingPage from '@/pages/LandingPage';
 import SignupPage from '@/pages/auth/SignupPage';
 import LoginPage from '@/pages/auth/LoginPage';
 import RequireAuth from '@/context/RequireAuth';
+
+// Developer pages
+import Testing from '@/pages/developers/Testing';
 
 // Centralized tool configurations
 export const devTools = [
@@ -324,11 +328,9 @@ export const routes: RouteObject[] = [
       {
         path: '/data-format/docs',
         element: (
-          <RequireAuth>
-            <Suspense fallback={<Loader />}>
-              <DataFormatConverterDocs />
-            </Suspense>
-          </RequireAuth>
+          <Suspense fallback={<Loader />}>
+            <DataFormatConverterDocs />
+          </Suspense>
         ),
       },
       {
@@ -347,6 +349,18 @@ export const routes: RouteObject[] = [
           <RequireAuth>
             <Suspense fallback={<Loader />}>
               <ApiRequestTesterDocs />
+            </Suspense>
+          </RequireAuth>
+        ),
+      },
+
+      // Developer tools
+      {
+        path: '/testing',
+        element: (
+          <RequireAuth>
+            <Suspense fallback={<Loader />}>
+              <Testing />
             </Suspense>
           </RequireAuth>
         ),

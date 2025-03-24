@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import {
   NavigationMenu,
@@ -12,26 +12,65 @@ import {
 } from '@/components/ui/navigation-menu';
 
 import { cn } from '@/lib/utils';
-// Import the centralized tool configurations
 import { devTools, aiTools } from '@/routes/index';
-// import { ModeToggle } from '../mode-toggle';
 
 export function NavMenu() {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  // Check for auth_token in both localStorage and sessionStorage
+  const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
+
+  const handleLogout = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    // Clear the auth_token from both storages
+    localStorage.removeItem('auth_token');
+    sessionStorage.removeItem('auth_token');
+    // Navigate to home after logout
+    navigate('/');
+  };
 
   return (
     <NavigationMenu className="justify-center">
       <NavigationMenuList>
-        <NavigationMenuItem>
-          <Link to="/">
-            <NavigationMenuLink
-              className={navigationMenuTriggerStyle()}
-              active={location.pathname === '/'}
-            >
-              Home
-            </NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem>
+        {token ? (
+          <>
+            <NavigationMenuItem>
+              <Link to="/dashboard">
+                <NavigationMenuLink
+                  className={navigationMenuTriggerStyle()}
+                  active={location.pathname === '/dashboard'}
+                >
+                  Dashboard
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuTrigger>Profile</NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                  <ListItem title="Profile" href="/profile">
+                    <div>View and edit your profile</div>
+                  </ListItem>
+                  <ListItem title="Logout" href="#" onClick={handleLogout}>
+                    <div>Logout from your account</div>
+                  </ListItem>
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+          </>
+        ) : (
+          <NavigationMenuItem>
+            <Link to="/">
+              <NavigationMenuLink
+                className={navigationMenuTriggerStyle()}
+                active={location.pathname === '/'}
+              >
+                Home
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>
+        )}
 
         <NavigationMenuItem>
           <NavigationMenuTrigger>Developer Tools</NavigationMenuTrigger>
@@ -74,7 +113,6 @@ export function NavMenu() {
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>
-
       </NavigationMenuList>
     </NavigationMenu>
   );
