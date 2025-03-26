@@ -1,6 +1,6 @@
 // frontend/src/routes/index.tsx
 import { Layout } from '@/components/layout/Layout';
-import { Clock, FileCode2, FileCog, FileJson, FileText, Image, Regex, Zap } from 'lucide-react';
+import { Clock, FileCog, FileJson, FileText, Image, Regex, Zap } from 'lucide-react';
 import { lazy, Suspense } from 'react';
 import { RouteObject } from 'react-router-dom';
 
@@ -25,16 +25,17 @@ import RegexPlaygroundDocs from '@/pages/documentation/RegexPlaygroundDocs';
 import ImageOptimizerDocs from './../pages/documentation/ImageOptimizerDoc';
 
 // Auth pages
-import LandingPage from '@/pages/LandingPage';
-import SignupPage from '@/pages/auth/SignupPage';
-import LoginPage from '@/pages/auth/LoginPage';
 import RequireAuth from '@/context/RequireAuth';
+import LandingPage from '@/pages/LandingPage';
+import LoginPage from '@/pages/auth/LoginPage';
+import SignupPage from '@/pages/auth/SignupPage';
 
 // Developer pages
 import Testing from '@/pages/developers/Testing';
 
 // User page
 import Profile from '@/pages/ProfilePage';
+import IssuePRSummaryGenerator from '@/pages/IssuePRSummaryGenerator';
 
 // Centralized tool configurations
 export const devTools = [
@@ -117,7 +118,7 @@ export const aiTools = [
     description: 'Summarize GitHub/GitLab issues, PRs, and changes using AI.',
     icon: <FileText className="h-10 w-10 mr-2" />,
     path: '/issue-pr-summary',
-    available: false,
+    available: true,
     category: 'Project & Collaboration Tools',
   },
   {
@@ -237,7 +238,7 @@ export const routes: RouteObject[] = [
         ),
       },
       {
-        path: '/code-formatter',
+        path: '/cron-builder',
         element: (
           <RequireAuth>
             <Suspense fallback={<Loader />}>
@@ -247,11 +248,11 @@ export const routes: RouteObject[] = [
         ),
       },
       {
-        path: '/cron-builder',
+        path: '/issue-pr-summary',
         element: (
           <RequireAuth>
             <Suspense fallback={<Loader />}>
-              <Maintenance />
+              <IssuePRSummaryGenerator />
             </Suspense>
           </RequireAuth>
         ),
