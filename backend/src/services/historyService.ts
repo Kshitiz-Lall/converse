@@ -40,7 +40,9 @@ export const saveRequestToHistory = async (
         .limit(excessCount);
 
       if (oldestEntries.length > 0) {
-        const oldestIds = oldestEntries.map((entry) => entry.id);
+        const oldestIds = oldestEntries.map(
+          (entry: IRequestHistory) => entry.id
+        );
         await RequestHistory.deleteMany({ id: { $in: oldestIds } });
       }
     }
