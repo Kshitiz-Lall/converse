@@ -11,6 +11,26 @@ export interface IUser extends Document {
     expiryDate: string;
     cvv: string;
   };
+  // Add these new fields
+  profilePicture?: string;
+  dateOfBirth?: Date;
+  gender?: 'male' | 'female' | 'other';
+  preferences?: {
+    language: string;
+    theme: 'light' | 'dark';
+    notifications: boolean;
+  };
+  socialMedia?: {
+    facebook?: string;
+    twitter?: string;
+    linkedin?: string;
+  };
+  isVerified?: boolean;
+  verificationToken?: string;
+  role?: 'user' | 'admin' | 'moderator';
+  lastLogin?: Date;
+  loginAttempts?: number;
+  accountStatus?: 'active' | 'suspended' | 'deleted';
   createdAt: Date;
   updatedAt: Date;
 }
@@ -27,6 +47,26 @@ const UserSchema: Schema = new Schema(
       expiryDate: { type: String, default: null },
       cvv: { type: String, default: null },
     },
+    // Add corresponding schema fields
+    profilePicture: { type: String },
+    dateOfBirth: { type: Date },
+    gender: { type: String, enum: ['male', 'female', 'other'] },
+    preferences: {
+      language: { type: String, default: 'en' },
+      theme: { type: String, enum: ['light', 'dark'], default: 'light' },
+      notifications: { type: Boolean, default: true }
+    },
+    socialMedia: {
+      facebook: { type: String },
+      twitter: { type: String },
+      linkedin: { type: String }
+    },
+    isVerified: { type: Boolean, default: false },
+    verificationToken: { type: String },
+    role: { type: String, enum: ['user', 'admin', 'moderator'], default: 'user' },
+    lastLogin: { type: Date },
+    loginAttempts: { type: Number, default: 0 },
+    accountStatus: { type: String, enum: ['active', 'suspended', 'deleted'], default: 'active' }
   },
   { timestamps: true }
 );

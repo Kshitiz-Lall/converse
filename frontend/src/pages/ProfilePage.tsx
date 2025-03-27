@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Form,
@@ -11,10 +12,15 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
-import { CreditCard, Home, Loader2, Mail, Phone } from 'lucide-react';
+import { format } from 'date-fns';
+import { CalendarIcon, CreditCard, Home, Loader2, Mail, Phone, User } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -25,6 +31,24 @@ const profileSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
   phone: z.string().optional(),
   address: z.string().optional(),
+  profilePicture: z.string().optional(),
+  dateOfBirth: z.date().optional(),
+  gender: z.enum(['male', 'female', 'other']).optional(),
+  role: z.enum(['user', 'admin', 'moderator']).optional(),
+});
+
+// Define preferences schema
+const preferencesSchema = z.object({
+  language: z.string(),
+  theme: z.enum(['light', 'dark']),
+  notifications: z.boolean(),
+});
+
+// Define social media schema
+const socialMediaSchema = z.object({
+  facebook: z.string().optional(),
+  twitter: z.string().optional(),
+  linkedin: z.string().optional(),
 });
 
 // Define payment schema
@@ -50,12 +74,26 @@ interface ProfileData {
   _id: string;
   name: string;
   email: string;
-  phone: string;
-  address: string;
-  paymentDetails: {
-    cardNumber: string | null;
-    expiryDate: string | null;
-    cvv: string | null;
+  phone?: string;
+  address?: string;
+  profilePicture?: string;
+  dateOfBirth?: Date;
+  gender?: 'male' | 'female' | 'other';
+  role?: 'user' | 'admin' | 'moderator';
+  preferences?: {
+    language: string;
+    theme: 'light' | 'dark';
+    notifications: boolean;
+  };
+  socialMedia?: {
+    facebook?: string;
+    twitter?: string;
+    linkedin?: string;
+  };
+  paymentDetails?: {
+    cardNumber?: string;
+    expiryDate?: string;
+    cvv?: string;
   };
   createdAt: string;
   updatedAt: string;
@@ -64,6 +102,7 @@ interface ProfileData {
 const ProfilePage: React.FC = () => {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [activeTab, setActiveTab] = useState('profile');
 
   // Initialize profile form
   const profileForm = useForm<z.infer<typeof profileSchema>>({
@@ -73,6 +112,28 @@ const ProfilePage: React.FC = () => {
       email: '',
       phone: '',
       address: '',
+      profilePicture: '',
+      gender: undefined,
+    },
+  });
+
+  // Initialize preferences form
+  const preferencesForm = useForm<z.infer<typeof preferencesSchema>>({
+    resolver: zodResolver(preferencesSchema),
+    defaultValues: {
+      language: 'en',
+      theme: 'light',
+      notifications: true,
+    },
+  });
+
+  // Initialize social media form
+  const socialMediaForm = useForm<z.infer<typeof socialMediaSchema>>({
+    resolver: zodResolver(socialMediaSchema),
+    defaultValues: {
+      facebook: '',
+      twitter: '',
+      linkedin: '',
     },
   });
 
@@ -110,6 +171,21 @@ const ProfilePage: React.FC = () => {
           email: response.data.email || '',
           phone: response.data.phone || '',
           address: response.data.address || '',
+          profilePicture: response.data.profilePicture || '',
+          dateOfBirth: response.data.dateOfBirth ? new Date(response.data.dateOfBirth) : undefined,
+          gender: response.data.gender || undefined,
+        });
+
+        preferencesForm.reset({
+          language: response.data.preferences?.language || 'en',
+          theme: response.data.preferences?.theme || 'light',
+          notifications: response.data.preferences?.notifications || true,
+        });
+
+        socialMediaForm.reset({
+          facebook: response.data.socialMedia?.facebook || '',
+          twitter: response.data.socialMedia?.twitter || '',
+          linkedin: response.data.socialMedia?.linkedin || '',
         });
 
         paymentForm.reset({
@@ -137,6 +213,7 @@ const ProfilePage: React.FC = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+
       // Update local state
       if (profile) {
         setProfile({
@@ -151,6 +228,60 @@ const ProfilePage: React.FC = () => {
     }
   };
 
+  const onPreferencesSubmit = async (data: z.infer<typeof preferencesSchema>) => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
+
+      await axios.put('http://localhost:3000/api/auth/profile', {
+        preferences: data
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // Update local state
+      if (profile) {
+        setProfile({
+          ...profile,
+          preferences: data,
+        });
+      }
+    } catch (error) {
+      console.error('Error updating preferences:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onSocialMediaSubmit = async (data: z.infer<typeof socialMediaSchema>) => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
+
+      await axios.put('http://localhost:3000/api/auth/profile', {
+        socialMedia: data
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // Update local state
+      if (profile) {
+        setProfile({
+          ...profile,
+          socialMedia: data,
+        });
+      }
+    } catch (error) {
+      console.error('Error updating social media:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const onPaymentSubmit = async (data: z.infer<typeof paymentSchema>) => {
     try {
       setLoading(true);
@@ -158,9 +289,7 @@ const ProfilePage: React.FC = () => {
 
       await axios.put(
         'http://localhost:3000/api/auth/payment-details',
-        {
-          paymentDetails: data,
-        },
+        data,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -173,9 +302,9 @@ const ProfilePage: React.FC = () => {
         setProfile({
           ...profile,
           paymentDetails: {
-            cardNumber: data.cardNumber || null,
-            expiryDate: data.expiryDate || null,
-            cvv: data.cvv || null,
+            cardNumber: data.cardNumber || undefined,
+            expiryDate: data.expiryDate || undefined,
+            cvv: data.cvv || undefined,
           },
         });
       }
@@ -187,7 +316,7 @@ const ProfilePage: React.FC = () => {
   };
 
   // Function to mask card number
-  const maskCardNumber = (cardNumber: string | null) => {
+  const maskCardNumber = (cardNumber?: string) => {
     if (!cardNumber) return '';
     return `**** **** **** ${cardNumber.slice(-4)}`;
   };
@@ -219,13 +348,22 @@ const ProfilePage: React.FC = () => {
             <CardHeader className="text-center">
               <div className="flex justify-center mb-4">
                 <Avatar className="h-24 w-24">
-                  <AvatarFallback className="text-2xl">
-                    {profile ? getInitials(profile.name) : 'U'}
-                  </AvatarFallback>
+                  {profile?.profilePicture ? (
+                    <img src={profile.profilePicture} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <AvatarFallback className="text-2xl">
+                      {profile ? getInitials(profile.name) : 'U'}
+                    </AvatarFallback>
+                  )}
                 </Avatar>
               </div>
               <CardTitle className="text-2xl">{profile?.name}</CardTitle>
               <CardDescription>{profile?.email}</CardDescription>
+              {profile?.role && (
+                <span className="inline-block px-2 py-1 text-xs font-medium rounded-full bg-primary/10 text-primary">
+                  {profile.role}
+                </span>
+              )}
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -245,6 +383,18 @@ const ProfilePage: React.FC = () => {
                     <span>{profile.address}</span>
                   </div>
                 )}
+                {profile?.dateOfBirth && (
+                  <div className="flex items-center gap-2">
+                    <CalendarIcon className="h-5 w-5 text-muted-foreground" />
+                    <span>{format(new Date(profile.dateOfBirth), 'PPP')}</span>
+                  </div>
+                )}
+                {profile?.gender && (
+                  <div className="flex items-center gap-2">
+                    <User className="h-5 w-5 text-muted-foreground" />
+                    <span className="capitalize">{profile.gender}</span>
+                  </div>
+                )}
                 {profile?.paymentDetails?.cardNumber && (
                   <div className="flex items-center gap-2">
                     <CreditCard className="h-5 w-5 text-muted-foreground" />
@@ -254,7 +404,24 @@ const ProfilePage: React.FC = () => {
               </div>
               <div className="mt-6">
                 <p className="text-sm text-muted-foreground">
-                  Account created on {new Date(profile?.createdAt || '').toLocaleDateString()}
+                  Member since {profile?.createdAt
+                    ? new Date(profile.createdAt).toLocaleDateString(undefined, {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })
+                    : 'Unknown date'}
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {profile?.lastLogin
+                    ? `Last active: ${new Date(profile.lastLogin).toLocaleString(undefined, {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}`
+                    : 'Last active: Unknown'}
                 </p>
               </div>
             </CardContent>
@@ -262,17 +429,19 @@ const ProfilePage: React.FC = () => {
         </div>
 
         <div className="w-full md:w-2/3">
-          <Tabs defaultValue="profile">
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="mb-6">
-              <TabsTrigger value="profile">Profile Details</TabsTrigger>
-              <TabsTrigger value="payment">Payment Information</TabsTrigger>
+              <TabsTrigger value="profile">Profile</TabsTrigger>
+              <TabsTrigger value="preferences">Preferences</TabsTrigger>
+              <TabsTrigger value="social">Social Media</TabsTrigger>
+              <TabsTrigger value="payment">Payment</TabsTrigger>
             </TabsList>
 
             <TabsContent value="profile">
               <Card>
                 <CardHeader>
-                  <CardTitle>Edit Profile</CardTitle>
-                  <CardDescription>Update your personal information</CardDescription>
+                  <CardTitle>Profile Information</CardTitle>
+                  <CardDescription>Update your personal details</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Form {...profileForm}>
@@ -317,9 +486,6 @@ const ProfilePage: React.FC = () => {
                             <FormControl>
                               <Input placeholder="Your phone number" {...field} />
                             </FormControl>
-                            <FormDescription>
-                              Optional: Add your phone number for contact purposes
-                            </FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -334,9 +500,88 @@ const ProfilePage: React.FC = () => {
                             <FormControl>
                               <Input placeholder="Your address" {...field} />
                             </FormControl>
-                            <FormDescription>
-                              Optional: Add your address for shipping purposes
-                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={profileForm.control}
+                        name="profilePicture"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Profile Picture URL</FormLabel>
+                            <FormControl>
+                              <Input placeholder="https://example.com/photo.jpg" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={profileForm.control}
+                        name="dateOfBirth"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col">
+                            <FormLabel>Date of Birth</FormLabel>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant={"outline"}
+                                    className={cn(
+                                      "w-full pl-3 text-left font-normal",
+                                      !field.value && "text-muted-foreground"
+                                    )}
+                                  >
+                                    {field.value ? (
+                                      format(field.value, "PPP")
+                                    ) : (
+                                      <span>Pick a date</span>
+                                    )}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                  mode="single"
+                                  selected={field.value}
+                                  onSelect={field.onChange}
+                                  disabled={(date: Date) => {
+                                    const today = new Date();
+                                    today.setHours(0, 0, 0, 0); // Normalize today's date
+                                    const minDate = new Date("1900-01-01");
+                                    return date > today || date < minDate;
+                                  }}
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={profileForm.control}
+                        name="gender"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Gender</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select gender" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="male">Male</SelectItem>
+                                <SelectItem value="female">Female</SelectItem>
+                                <SelectItem value="other">Other</SelectItem>
+                              </SelectContent>
+                            </Select>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -350,6 +595,174 @@ const ProfilePage: React.FC = () => {
                           </>
                         ) : (
                           'Update Profile'
+                        )}
+                      </Button>
+                    </form>
+                  </Form>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="preferences">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Preferences</CardTitle>
+                  <CardDescription>Customize your experience</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Form {...preferencesForm}>
+                    <form
+                      onSubmit={preferencesForm.handleSubmit(onPreferencesSubmit)}
+                      className="space-y-6"
+                    >
+                      <FormField
+                        control={preferencesForm.control}
+                        name="language"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Language</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select language" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="en">English</SelectItem>
+                                <SelectItem value="es">Spanish</SelectItem>
+                                <SelectItem value="fr">French</SelectItem>
+                                <SelectItem value="de">German</SelectItem>
+                                <SelectItem value="it">Italian</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={preferencesForm.control}
+                        name="theme"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Theme</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select theme" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="light">Light</SelectItem>
+                                <SelectItem value="dark">Dark</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={preferencesForm.control}
+                        name="notifications"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                            <div className="space-y-0.5">
+                              <FormLabel className="text-base">
+                                Email Notifications
+                              </FormLabel>
+                              <FormDescription>
+                                Receive email notifications
+                              </FormDescription>
+                            </div>
+                            <FormControl>
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+
+                      <Button type="submit" disabled={loading} className="w-full">
+                        {loading ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Updating Preferences
+                          </>
+                        ) : (
+                          'Update Preferences'
+                        )}
+                      </Button>
+                    </form>
+                  </Form>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="social">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Social Media</CardTitle>
+                  <CardDescription>Connect your social accounts</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Form {...socialMediaForm}>
+                    <form
+                      onSubmit={socialMediaForm.handleSubmit(onSocialMediaSubmit)}
+                      className="space-y-6"
+                    >
+                      <FormField
+                        control={socialMediaForm.control}
+                        name="facebook"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Facebook</FormLabel>
+                            <FormControl>
+                              <Input placeholder="https://facebook.com/username" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={socialMediaForm.control}
+                        name="twitter"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Twitter</FormLabel>
+                            <FormControl>
+                              <Input placeholder="https://twitter.com/username" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={socialMediaForm.control}
+                        name="linkedin"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>LinkedIn</FormLabel>
+                            <FormControl>
+                              <Input placeholder="https://linkedin.com/in/username" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <Button type="submit" disabled={loading} className="w-full">
+                        {loading ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Updating Social Media
+                          </>
+                        ) : (
+                          'Update Social Media'
                         )}
                       </Button>
                     </form>

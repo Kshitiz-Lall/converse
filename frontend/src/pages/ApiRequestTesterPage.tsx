@@ -34,9 +34,9 @@ export default function ApiRequestTesterPage() {
   // Sidebar states
   const [activeTab, setActiveTab] = useState<string>('request');
   const [history, setHistory] = useState<HistoryItem[]>([]);
-  const [collections, setCollections] = useState<Collection[]>([]);
-  const [environments, setEnvironments] = useState<Environment[]>([]);
-  const [activeEnvironment, setActiveEnvironment] = useState<Environment | null>(null);
+  const [collections] = useState<Collection[]>([]);
+  const [environments ] = useState<Environment[]>([]);
+  const [activeEnvironment] = useState<Environment | null>(null);
 
   // Load history on mount
   useEffect(() => {
