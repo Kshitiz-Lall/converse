@@ -10,7 +10,7 @@ function App() {
   return (
     <>
       <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-        <Toaster />
+        <Toaster richColors />
         <div className="font-primary">{routeElement}</div>
       </ThemeProvider>
     </>

@@ -23,6 +23,7 @@ import ApiRequestTesterDocs from '@/pages/documentation/ApiRequestTesterDocs';
 import DataFormatConverterDocs from '@/pages/documentation/DataFormatConverterDoc';
 import RegexPlaygroundDocs from '@/pages/documentation/RegexPlaygroundDocs';
 import ImageOptimizerDocs from './../pages/documentation/ImageOptimizerDoc';
+import PRSummaryGeneratorDocs from './../pages/documentation/PRSummaryGeneratorDocs';
 
 // Auth pages
 import RequireAuth from '@/context/RequireAuth';
@@ -36,6 +37,8 @@ import Testing from '@/pages/developers/Testing';
 // User page
 import Profile from '@/pages/ProfilePage';
 import IssuePRSummaryGenerator from '@/pages/IssuePRSummaryGenerator';
+import AIDebuggerPage from '@/pages/AIDebuggerPage';
+import CronExpressionBuilder from '@/pages/CronExpressionBuilder';
 
 // Centralized tool configurations
 export const devTools = [
@@ -77,7 +80,7 @@ export const devTools = [
     description: 'Build and validate cron expressions',
     icon: <Clock className="h-10 w-10 mr-2" />,
     path: '/cron-builder',
-    available: false,
+    available: true,
   },
 ];
 
@@ -242,7 +245,7 @@ export const routes: RouteObject[] = [
         element: (
           <RequireAuth>
             <Suspense fallback={<Loader />}>
-              <Maintenance />
+              <CronExpressionBuilder />
             </Suspense>
           </RequireAuth>
         ),
@@ -253,6 +256,16 @@ export const routes: RouteObject[] = [
           <RequireAuth>
             <Suspense fallback={<Loader />}>
               <IssuePRSummaryGenerator />
+            </Suspense>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: '/ai-debugger',
+        element: (
+          <RequireAuth>
+            <Suspense fallback={<Loader />}>
+              <AIDebuggerPage />
             </Suspense>
           </RequireAuth>
         ),
@@ -335,6 +348,16 @@ export const routes: RouteObject[] = [
           <RequireAuth>
             <Suspense fallback={<Loader />}>
               <ApiRequestTesterDocs />
+            </Suspense>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: '/issue-pr-summary/docs',
+        element: (
+          <RequireAuth>
+            <Suspense fallback={<Loader />}>
+              <PRSummaryGeneratorDocs />
             </Suspense>
           </RequireAuth>
         ),

@@ -235,6 +235,18 @@ export const updateUser = async (req: AuthenticatedRequest, res: Response) => {
       socialMedia
     } = req.body;
 
+    // Validate profilePicture if it exists
+    if (profilePicture) {
+      if (!profilePicture.startsWith('data:image/')) {
+        return res.status(400).json({ message: "Invalid image format" });
+      }
+
+      // Check size (rough estimate - base64 is about 1.37x larger than binary)
+      if (profilePicture.length > 3 * 1024 * 1024) { // ~3MB
+        return res.status(400).json({ message: "Image too large (max 2MB)" });
+      }
+    }
+
     // Find user and update
     const updatedUser = await User.findByIdAndUpdate(
       req.userId,
@@ -248,14 +260,17 @@ export const updateUser = async (req: AuthenticatedRequest, res: Response) => {
         preferences,
         socialMedia
       },
-      { new: true } // Return the updated document
+      { new: true }
     ).select("-password -verificationToken -paymentDetails.cvv");
 
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.json({ message: "User updated successfully", user: updatedUser });
+    res.json({
+      message: "User updated successfully",
+      user: updatedUser
+    });
   } catch (error) {
     res.status(500).json({ message: "Error updating user", error });
   }

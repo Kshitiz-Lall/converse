@@ -20,9 +20,10 @@ import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { format } from 'date-fns';
-import { CalendarIcon, CreditCard, Home, Loader2, Mail, Phone, User } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import { CalendarIcon, CreditCard, Home, Loader2, Mail, Phone, Upload, User } from 'lucide-react';
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 // Define form schema
@@ -31,10 +32,13 @@ const profileSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
   phone: z.string().optional(),
   address: z.string().optional(),
-  profilePicture: z.string().optional(),
+  profilePicture: z.string()
+    .refine(val => !val || val.startsWith('data:image/'), {
+      message: 'Must be a valid image data URL'
+    })
+    .optional(),
   dateOfBirth: z.date().optional(),
   gender: z.enum(['male', 'female', 'other']).optional(),
-  role: z.enum(['user', 'admin', 'moderator']).optional(),
 });
 
 // Define preferences schema
@@ -102,7 +106,10 @@ interface ProfileData {
 const ProfilePage: React.FC = () => {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [uploading, setUploading] = useState<boolean>(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('profile');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Initialize profile form
   const profileForm = useForm<z.infer<typeof profileSchema>>({
@@ -112,7 +119,6 @@ const ProfilePage: React.FC = () => {
       email: '',
       phone: '',
       address: '',
-      profilePicture: '',
       gender: undefined,
     },
   });
@@ -164,6 +170,9 @@ const ProfilePage: React.FC = () => {
         });
 
         setProfile(response.data);
+        if (response.data.profilePicture) {
+          setPreviewImage(response.data.profilePicture);
+        }
 
         // Set form values
         profileForm.reset({
@@ -171,7 +180,6 @@ const ProfilePage: React.FC = () => {
           email: response.data.email || '',
           phone: response.data.phone || '',
           address: response.data.address || '',
-          profilePicture: response.data.profilePicture || '',
           dateOfBirth: response.data.dateOfBirth ? new Date(response.data.dateOfBirth) : undefined,
           gender: response.data.gender || undefined,
         });
@@ -203,26 +211,94 @@ const ProfilePage: React.FC = () => {
     fetchProfile();
   }, []);
 
+  const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+
+      // Check file size (limit to 2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error('File too large', {
+          description: 'Please select an image smaller than 2MB'
+        });
+        return;
+      }
+
+      // Check file type
+      if (!file.type.match('image.*')) {
+        toast.error('Invalid file type', {
+          description: 'Please select an image file (JPEG, PNG, etc.)'
+        });
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          const base64String = event.target.result as string;
+          setPreviewImage(base64String);
+          profileForm.setValue('profilePicture', base64String);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const uploadImage = async (file: File) => {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
+    const response = await axios.post('http://localhost:3000/api/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data.url;
+  };
+
   const onProfileSubmit = async (data: z.infer<typeof profileSchema>) => {
     try {
       setLoading(true);
       const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
 
-      await axios.put('http://localhost:3000/api/auth/profile', data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      // Prepare the data to send
+      const profileData = {
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        address: data.address,
+        profilePicture: data.profilePicture,
+        dateOfBirth: data.dateOfBirth,
+        gender: data.gender,
+      };
+
+      const response = await axios.put(
+        'http://localhost:3000/api/auth/profile',
+        profileData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
       // Update local state
       if (profile) {
         setProfile({
           ...profile,
-          ...data,
+          ...response.data.user,
         });
       }
+
+      toast.success('Profile updated successfully');
     } catch (error) {
       console.error('Error updating profile:', error);
+      toast.error('Error updating profile', {
+        description: error.response?.data?.message || 'An error occurred'
+      });
     } finally {
       setLoading(false);
     }
@@ -346,17 +422,37 @@ const ProfilePage: React.FC = () => {
         <div className="w-full md:w-1/3">
           <Card>
             <CardHeader className="text-center">
-              <div className="flex justify-center mb-4">
-                <Avatar className="h-24 w-24">
-                  {profile?.profilePicture ? (
-                    <img src={profile.profilePicture} alt="Profile" className="w-full h-full object-cover" />
-                  ) : (
-                    <AvatarFallback className="text-2xl">
+              <label className="block mb-4 w-full aspect-square overflow-hidden rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-primary cursor-pointer transition-colors">
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageChange}
+                />
+                {previewImage ? (
+                  <div className="relative w-full h-full group">
+                    <img
+                      src={previewImage}
+                      alt="Profile"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Upload className="h-8 w-8 text-white" />
+                      <span className="sr-only">Upload new photo</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="w-full h-full bg-gray-100 dark:bg-gray-800 flex flex-col items-center justify-center gap-2">
+                    <Upload className="h-8 w-8 text-gray-400" />
+                    <span className="text-gray-500 dark:text-gray-400">
+                      Click to upload profile photo
+                    </span>
+                    <span className="text-4xl text-gray-400">
                       {profile ? getInitials(profile.name) : 'U'}
-                    </AvatarFallback>
-                  )}
-                </Avatar>
-              </div>
+                    </span>
+                  </div>
+                )}
+              </label>
               <CardTitle className="text-2xl">{profile?.name}</CardTitle>
               <CardDescription>{profile?.email}</CardDescription>
               {profile?.role && (
@@ -404,25 +500,13 @@ const ProfilePage: React.FC = () => {
               </div>
               <div className="mt-6">
                 <p className="text-sm text-muted-foreground">
-                  Member since {profile?.createdAt
-                    ? new Date(profile.createdAt).toLocaleDateString(undefined, {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })
-                    : 'Unknown date'}
+                  Member since {new Date(profile?.createdAt || '').toLocaleDateString()}
                 </p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {profile?.lastLogin
-                    ? `Last active: ${new Date(profile.lastLogin).toLocaleString(undefined, {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}`
-                    : 'Last active: Unknown'}
-                </p>
+                {profile?.lastLogin && (
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Last active: {new Date(profile.lastLogin).toLocaleString()}
+                  </p>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -507,20 +591,6 @@ const ProfilePage: React.FC = () => {
 
                       <FormField
                         control={profileForm.control}
-                        name="profilePicture"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Profile Picture URL</FormLabel>
-                            <FormControl>
-                              <Input placeholder="https://example.com/photo.jpg" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={profileForm.control}
                         name="dateOfBirth"
                         render={({ field }) => (
                           <FormItem className="flex flex-col">
@@ -549,12 +619,9 @@ const ProfilePage: React.FC = () => {
                                   mode="single"
                                   selected={field.value}
                                   onSelect={field.onChange}
-                                  disabled={(date: Date) => {
-                                    const today = new Date();
-                                    today.setHours(0, 0, 0, 0); // Normalize today's date
-                                    const minDate = new Date("1900-01-01");
-                                    return date > today || date < minDate;
-                                  }}
+                                  disabled={(date) =>
+                                    date > new Date() || date < new Date("1900-01-01")
+                                  }
                                   initialFocus
                                 />
                               </PopoverContent>
@@ -587,11 +654,11 @@ const ProfilePage: React.FC = () => {
                         )}
                       />
 
-                      <Button type="submit" disabled={loading} className="w-full">
-                        {loading ? (
+                      <Button type="submit" disabled={loading || uploading} className="w-full">
+                        {loading || uploading ? (
                           <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Updating Profile
+                            {uploading ? 'Uploading Image...' : 'Updating Profile'}
                           </>
                         ) : (
                           'Update Profile'

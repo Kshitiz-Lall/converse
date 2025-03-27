@@ -48,7 +48,16 @@ const UserSchema: Schema = new Schema(
       cvv: { type: String, default: null },
     },
     // Add corresponding schema fields
-    profilePicture: { type: String },
+    profilePicture: {
+      type: String,
+      validate: {
+        validator: (value: string) => {
+          if (!value) return true;
+          return value.startsWith('data:image/') && value.length < 3 * 1024 * 1024; // ~3MB max
+        },
+        message: 'Invalid image format or too large'
+      }
+    },
     dateOfBirth: { type: Date },
     gender: { type: String, enum: ['male', 'female', 'other'] },
     preferences: {
