@@ -32,13 +32,15 @@ import LoginPage from '@/pages/auth/LoginPage';
 import SignupPage from '@/pages/auth/SignupPage';
 
 // Developer pages
+import DocumentationPage from '@/pages/DocumentationPage';
 import Testing from '@/pages/developers/Testing';
 
 // User page
-import Profile from '@/pages/ProfilePage';
-import IssuePRSummaryGenerator from '@/pages/IssuePRSummaryGenerator';
 import AIDebuggerPage from '@/pages/AIDebuggerPage';
 import CronExpressionBuilder from '@/pages/CronExpressionBuilder';
+import IssuePRSummaryGenerator from '@/pages/IssuePRSummaryGenerator';
+import Profile from '@/pages/ProfilePage';
+import AdminDashboard from '@/pages/admin/AdminDashboard';
 
 // Centralized tool configurations
 export const devTools = [
@@ -315,6 +317,16 @@ export const routes: RouteObject[] = [
 
       // Documentation
       {
+        path: '/documentation',
+        element: (
+          <RequireAuth>
+            <Suspense fallback={<Loader />}>
+              <DocumentationPage />
+            </Suspense>
+          </RequireAuth>
+        ),
+      },
+      {
         path: '/image-optimizer/docs',
         element: (
           <RequireAuth>
@@ -382,6 +394,16 @@ export const routes: RouteObject[] = [
           <RequireAuth>
             <Suspense fallback={<Loader />}>
               <Profile />
+            </Suspense>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: '/admin-panel',
+        element: (
+          <RequireAuth>
+            <Suspense fallback={<Loader />}>
+              <AdminDashboard />
             </Suspense>
           </RequireAuth>
         ),

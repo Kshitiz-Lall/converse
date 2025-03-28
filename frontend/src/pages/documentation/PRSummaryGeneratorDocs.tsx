@@ -7,7 +7,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
+  TableRow,
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Copy, GitPullRequest, Github, Gitlab, Info } from 'lucide-react';
@@ -137,9 +137,7 @@ export default function PRSummaryGeneratorDocs() {
                       </div>
                       <div>
                         <h3 className="font-semibold text-lg">PR Summarization</h3>
-                        <p className="text-gray-600 text-sm">
-                          Comprehensive pull request analysis
-                        </p>
+                        <p className="text-gray-600 text-sm">Comprehensive pull request analysis</p>
                       </div>
                     </div>
                     <p className="text-gray-700">
@@ -238,9 +236,7 @@ export default function PRSummaryGeneratorDocs() {
 
                   <div className="border-l-4 border-primary pl-4 py-1">
                     <h3 className="text-lg font-semibold mb-2">2. Select Summary Type</h3>
-                    <p className="text-gray-700 mb-2">
-                      Choose what you want to summarize:
-                    </p>
+                    <p className="text-gray-700 mb-2">Choose what you want to summarize:</p>
                     <ul className="list-disc pl-5 space-y-1 text-gray-700">
                       <li>
                         <strong>Pull Request:</strong> General overview of the PR
@@ -336,9 +332,7 @@ export default function PRSummaryGeneratorDocs() {
           <TabsContent value="best-practices">
             <Card>
               <CardContent className="pt-6">
-                <h2 className="text-2xl font-bold mb-6">
-                  Best Practices for Effective Summaries
-                </h2>
+                <h2 className="text-2xl font-bold mb-6">Best Practices for Effective Summaries</h2>
 
                 <div className="space-y-6">
                   <div className="border-l-4 border-primary pl-4 py-1">

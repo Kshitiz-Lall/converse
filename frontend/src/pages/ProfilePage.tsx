@@ -13,7 +13,13 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
@@ -32,9 +38,10 @@ const profileSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
   phone: z.string().optional(),
   address: z.string().optional(),
-  profilePicture: z.string()
+  profilePicture: z
+    .string()
     .refine(val => !val || val.startsWith('data:image/'), {
-      message: 'Must be a valid image data URL'
+      message: 'Must be a valid image data URL',
     })
     .optional(),
   dateOfBirth: z.date().optional(),
@@ -218,7 +225,7 @@ const ProfilePage: React.FC = () => {
       // Check file size (limit to 2MB)
       if (file.size > 2 * 1024 * 1024) {
         toast.error('File too large', {
-          description: 'Please select an image smaller than 2MB'
+          description: 'Please select an image smaller than 2MB',
         });
         return;
       }
@@ -226,13 +233,13 @@ const ProfilePage: React.FC = () => {
       // Check file type
       if (!file.type.match('image.*')) {
         toast.error('Invalid file type', {
-          description: 'Please select an image file (JPEG, PNG, etc.)'
+          description: 'Please select an image file (JPEG, PNG, etc.)',
         });
         return;
       }
 
       const reader = new FileReader();
-      reader.onload = (event) => {
+      reader.onload = event => {
         if (event.target?.result) {
           const base64String = event.target.result as string;
           setPreviewImage(base64String);
@@ -241,21 +248,6 @@ const ProfilePage: React.FC = () => {
       };
       reader.readAsDataURL(file);
     }
-  };
-
-  const uploadImage = async (file: File) => {
-    const formData = new FormData();
-    formData.append('image', file);
-
-    const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
-    const response = await axios.post('http://localhost:3000/api/upload', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response.data.url;
   };
 
   const onProfileSubmit = async (data: z.infer<typeof profileSchema>) => {
@@ -274,16 +266,12 @@ const ProfilePage: React.FC = () => {
         gender: data.gender,
       };
 
-      const response = await axios.put(
-        'http://localhost:3000/api/auth/profile',
-        profileData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      const response = await axios.put('http://localhost:3000/api/auth/profile', profileData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
       // Update local state
       if (profile) {
@@ -297,7 +285,7 @@ const ProfilePage: React.FC = () => {
     } catch (error) {
       console.error('Error updating profile:', error);
       toast.error('Error updating profile', {
-        description: error.response?.data?.message || 'An error occurred'
+        description: 'An error occurred',
       });
     } finally {
       setLoading(false);
@@ -309,13 +297,17 @@ const ProfilePage: React.FC = () => {
       setLoading(true);
       const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
 
-      await axios.put('http://localhost:3000/api/auth/profile', {
-        preferences: data
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      await axios.put(
+        'http://localhost:3000/api/auth/profile',
+        {
+          preferences: data,
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       // Update local state
       if (profile) {
@@ -336,13 +328,17 @@ const ProfilePage: React.FC = () => {
       setLoading(true);
       const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
 
-      await axios.put('http://localhost:3000/api/auth/profile', {
-        socialMedia: data
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      await axios.put(
+        'http://localhost:3000/api/auth/profile',
+        {
+          socialMedia: data,
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       // Update local state
       if (profile) {
@@ -363,15 +359,11 @@ const ProfilePage: React.FC = () => {
       setLoading(true);
       const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
 
-      await axios.put(
-        'http://localhost:3000/api/auth/payment-details',
-        data,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.put('http://localhost:3000/api/auth/payment-details', data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       // Update local state
       if (profile) {
@@ -431,11 +423,7 @@ const ProfilePage: React.FC = () => {
                 />
                 {previewImage ? (
                   <div className="relative w-full h-full group">
-                    <img
-                      src={previewImage}
-                      alt="Profile"
-                      className="w-full h-full object-cover"
-                    />
+                    <img src={previewImage} alt="Profile" className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                       <Upload className="h-8 w-8 text-white" />
                       <span className="sr-only">Upload new photo</span>
@@ -599,14 +587,14 @@ const ProfilePage: React.FC = () => {
                               <PopoverTrigger asChild>
                                 <FormControl>
                                   <Button
-                                    variant={"outline"}
+                                    variant={'outline'}
                                     className={cn(
-                                      "w-full pl-3 text-left font-normal",
-                                      !field.value && "text-muted-foreground"
+                                      'w-full pl-3 text-left font-normal',
+                                      !field.value && 'text-muted-foreground'
                                     )}
                                   >
                                     {field.value ? (
-                                      format(field.value, "PPP")
+                                      format(field.value, 'PPP')
                                     ) : (
                                       <span>Pick a date</span>
                                     )}
@@ -619,8 +607,8 @@ const ProfilePage: React.FC = () => {
                                   mode="single"
                                   selected={field.value}
                                   onSelect={field.onChange}
-                                  disabled={(date) =>
-                                    date > new Date() || date < new Date("1900-01-01")
+                                  disabled={date =>
+                                    date > new Date() || date < new Date('1900-01-01')
                                   }
                                   initialFocus
                                 />
@@ -735,18 +723,11 @@ const ProfilePage: React.FC = () => {
                         render={({ field }) => (
                           <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                             <div className="space-y-0.5">
-                              <FormLabel className="text-base">
-                                Email Notifications
-                              </FormLabel>
-                              <FormDescription>
-                                Receive email notifications
-                              </FormDescription>
+                              <FormLabel className="text-base">Email Notifications</FormLabel>
+                              <FormDescription>Receive email notifications</FormDescription>
                             </div>
                             <FormControl>
-                              <Switch
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                              />
+                              <Switch checked={field.value} onCheckedChange={field.onChange} />
                             </FormControl>
                           </FormItem>
                         )}

@@ -35,7 +35,7 @@ export default function ApiRequestTesterPage() {
   const [activeTab, setActiveTab] = useState<string>('request');
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [collections] = useState<Collection[]>([]);
-  const [environments ] = useState<Environment[]>([]);
+  const [environments] = useState<Environment[]>([]);
   const [activeEnvironment] = useState<Environment | null>(null);
 
   // Load history on mount

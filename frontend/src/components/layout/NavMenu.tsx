@@ -52,6 +52,9 @@ export function NavMenu() {
                   <ListItem title="Profile" href="/profile">
                     <div>View and edit your profile</div>
                   </ListItem>
+                  <ListItem title="Admin" href="/admin-panel">
+                    <div>View and edit your profile</div>
+                  </ListItem>
                   <ListItem title="Logout" href="#" onClick={handleLogout}>
                     <div>Logout from your account</div>
                   </ListItem>

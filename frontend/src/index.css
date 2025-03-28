@@ -123,7 +123,9 @@
   body {
     @apply bg-background text-foreground;
     /* Improved dark mode transitions */
-    transition: background-color 0.2s ease, color 0.2s ease;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
   }
 
   /* Better dark mode code blocks */
@@ -132,7 +134,8 @@
   }
 
   /* Improved dark mode inputs */
-  input, textarea {
+  input,
+  textarea {
     @apply bg-background text-foreground placeholder-muted-foreground;
     &:focus {
       @apply ring-2 ring-ring;

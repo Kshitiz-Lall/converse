@@ -18,12 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Slider } from '@/components/ui/slider';
 
 export default function AIDebuggerPage() {
@@ -82,9 +77,7 @@ export default function AIDebuggerPage() {
       toast.success('Analysis complete!');
     } catch (err: any) {
       const message =
-        err.response?.data?.error ||
-        err.message ||
-        'Something went wrong during analysis';
+        err.response?.data?.error || err.message || 'Something went wrong during analysis';
       toast.error(message);
     } finally {
       setLoading(false);
@@ -126,8 +119,6 @@ console.log(calculateTotal(cart));`);
   const getCodeClassName = () => {
     return `language-${language} text-sm font-mono bg-gray-800 text-gray-100 p-4 rounded-lg overflow-x-auto`;
   };
-
-
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10">
@@ -172,7 +163,7 @@ console.log(calculateTotal(cart));`);
                       <SelectValue placeholder="Select language" />
                     </SelectTrigger>
                     <SelectContent>
-                      {languages.map((lang) => (
+                      {languages.map(lang => (
                         <SelectItem key={lang} value={lang}>
                           {lang.charAt(0).toUpperCase() + lang.slice(1)}
                         </SelectItem>
@@ -185,7 +176,7 @@ console.log(calculateTotal(cart));`);
                   <Label>Analysis Type</Label>
                   <RadioGroup
                     value={analysisType}
-                    onValueChange={(val) => setAnalysisType(val as any)}
+                    onValueChange={val => setAnalysisType(val as any)}
                     className="flex flex-wrap gap-4 pt-2"
                   >
                     <div className="flex items-center space-x-2">
@@ -209,7 +200,7 @@ console.log(calculateTotal(cart));`);
                     <Input
                       placeholder="Enter the error message you're seeing"
                       value={error}
-                      onChange={(e) => setError(e.target.value)}
+                      onChange={e => setError(e.target.value)}
                     />
                   </div>
                 )}
@@ -217,15 +208,13 @@ console.log(calculateTotal(cart));`);
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label>Code to Analyze</Label>
-                    <span className="text-xs text-muted-foreground">
-                      {code.length} characters
-                    </span>
+                    <span className="text-xs text-muted-foreground">{code.length} characters</span>
                   </div>
                   <Textarea
                     className="min-h-[300px] font-mono text-sm"
                     placeholder={`Paste your ${language} code here...`}
                     value={code}
-                    onChange={(e) => setCode(e.target.value)}
+                    onChange={e => setCode(e.target.value)}
                   />
                 </div>
 
@@ -235,7 +224,7 @@ console.log(calculateTotal(cart));`);
                     defaultValue={[50]}
                     max={100}
                     step={10}
-                    onValueChange={(value) => setDebugDepth(value[0])}
+                    onValueChange={value => setDebugDepth(value[0])}
                   />
                   <div className="flex justify-between text-sm text-muted-foreground">
                     <span>Quick Scan</span>
@@ -243,12 +232,7 @@ console.log(calculateTotal(cart));`);
                   </div>
                 </div>
 
-                <Button
-                  onClick={handleSubmit}
-                  disabled={loading}
-                  className="w-full mt-4"
-                  size="lg"
-                >
+                <Button onClick={handleSubmit} disabled={loading} className="w-full mt-4" size="lg">
                   {loading ? (
                     <>
                       <Loader2 className="animate-spin h-4 w-4 mr-2" />
@@ -305,9 +289,7 @@ console.log(calculateTotal(cart));`);
                         Copy
                       </Button>
                     </div>
-                    <pre className={getCodeClassName()}>
-                      {debugResults.fixedCode}
-                    </pre>
+                    <pre className={getCodeClassName()}>{debugResults.fixedCode}</pre>
                   </div>
 
                   <Button
@@ -374,18 +356,14 @@ console.log(calculateTotal(cart));`);
 
               <div>
                 <h3 className="font-medium mb-2">Corrected Code</h3>
-                <pre className={getCodeClassName()}>
-                  {debugResults.fixedCode}
-                </pre>
+                <pre className={getCodeClassName()}>{debugResults.fixedCode}</pre>
               </div>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center h-[300px] border-2 border-dashed rounded-lg text-muted-foreground">
               <Bug className="h-10 w-10 mb-2" />
               <p>Debugging results will appear here</p>
-              <p className="text-sm mt-2">
-                Enter your code and click "Analyze Code"
-              </p>
+              <p className="text-sm mt-2">Enter your code and click "Analyze Code"</p>
             </div>
           )}
 

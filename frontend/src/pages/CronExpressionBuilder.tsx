@@ -3,11 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Command, CommandGroup, CommandItem } from '@/components/ui/command';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { Check, ChevronsUpDown, Clock, Copy, X } from 'lucide-react';
@@ -26,19 +22,15 @@ const presetExpressions: Record<Preset, string> = {
   weekly: '0 0 * * 0',
   monthly: '0 0 1 * *',
   yearly: '0 0 1 1 *',
-  custom: '* * * * *'
+  custom: '* * * * *',
 };
 
 const timeUnitOptions: Record<TimeUnit, string[]> = {
   minute: Array.from({ length: 60 }, (_, i) => i.toString()),
   hour: Array.from({ length: 24 }, (_, i) => i.toString()),
   day: Array.from({ length: 31 }, (_, i) => (i + 1).toString()),
-  month: [
-    '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12',
-  ],
-  weekday: [
-    '0', '1', '2', '3', '4', '5', '6',
-  ]
+  month: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+  weekday: ['0', '1', '2', '3', '4', '5', '6'],
 };
 
 const timeUnitLabels: Record<TimeUnit, string> = {
@@ -46,7 +38,7 @@ const timeUnitLabels: Record<TimeUnit, string> = {
   hour: 'Hour',
   day: 'Day of Month',
   month: 'Month',
-  weekday: 'Day of Week'
+  weekday: 'Day of Week',
 };
 
 export default function CronExpressionBuilder() {
@@ -57,7 +49,7 @@ export default function CronExpressionBuilder() {
     hour: ['0'],
     day: ['*'],
     month: ['*'],
-    weekday: ['*']
+    weekday: ['*'],
   });
   const [isValid, setIsValid] = useState(true);
   const [openPopovers, setOpenPopovers] = useState<Record<TimeUnit, boolean>>({
@@ -65,7 +57,7 @@ export default function CronExpressionBuilder() {
     hour: false,
     day: false,
     month: false,
-    weekday: false
+    weekday: false,
   });
 
   // Initialize with daily preset
@@ -94,7 +86,7 @@ export default function CronExpressionBuilder() {
         hour: parsePart(parts[1], 'hour'),
         day: parsePart(parts[2], 'day'),
         month: parsePart(parts[3], 'month'),
-        weekday: parsePart(parts[4], 'weekday')
+        weekday: parsePart(parts[4], 'weekday'),
       };
       setSelectedValues(newValues);
       setIsValid(true);
@@ -131,7 +123,7 @@ export default function CronExpressionBuilder() {
       values.hour.join(','),
       values.day.join(','),
       values.month.join(','),
-      values.weekday.join(',')
+      values.weekday.join(','),
     ].join(' ');
   };
 
@@ -160,7 +152,8 @@ export default function CronExpressionBuilder() {
       // Check each part contains valid characters
       const validChars = /^[\d,*\/-]+$/;
       for (let i = 0; i < 5; i++) {
-        if (!validChars.test(parts[i])) {  // Fixed: Added missing closing parenthesis
+        if (!validChars.test(parts[i])) {
+          // Fixed: Added missing closing parenthesis
           setIsValid(false);
           return false;
         }
@@ -230,9 +223,9 @@ export default function CronExpressionBuilder() {
       </div>
 
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow p-6">
-        <Tabs value={activePreset} onValueChange={(val) => handlePresetChange(val as Preset)}>
+        <Tabs value={activePreset} onValueChange={val => handlePresetChange(val as Preset)}>
           <TabsList className="grid w-full grid-cols-6 mb-6">
-            {presets.map((preset) => (
+            {presets.map(preset => (
               <TabsTrigger key={preset} value={preset}>
                 {preset.charAt(0).toUpperCase() + preset.slice(1)}
               </TabsTrigger>
@@ -245,19 +238,12 @@ export default function CronExpressionBuilder() {
           <div className="space-y-6">
             <h2 className="text-xl font-semibold">Visual Builder</h2>
 
-            {timeUnits.map((unit) => (
+            {timeUnits.map(unit => (
               <div key={unit} className="space-y-2">
                 <Label>{timeUnitLabels[unit]}</Label>
-                <Popover
-                  open={openPopovers[unit]}
-                  onOpenChange={(open) => togglePopover(unit, open)}
-                >
+                <Popover open={openPopovers[unit]} onOpenChange={open => togglePopover(unit, open)}>
                   <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      className="w-full justify-between"
-                    >
+                    <Button variant="outline" role="combobox" className="w-full justify-between">
                       <span>{formatDisplayValue(unit)}</span>
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
@@ -272,13 +258,13 @@ export default function CronExpressionBuilder() {
                         >
                           <Check
                             className={cn(
-                              "mr-2 h-4 w-4 flex-shrink-0",
-                              selectedValues[unit].includes('*') ? "opacity-100" : "opacity-0"
+                              'mr-2 h-4 w-4 flex-shrink-0',
+                              selectedValues[unit].includes('*') ? 'opacity-100' : 'opacity-0'
                             )}
                           />
                           <span className="truncate">Every</span>
                         </CommandItem>
-                        {timeUnitOptions[unit].map((value) => (
+                        {timeUnitOptions[unit].map(value => (
                           <CommandItem
                             key={value}
                             value={value}
@@ -287,8 +273,8 @@ export default function CronExpressionBuilder() {
                           >
                             <Check
                               className={cn(
-                                "mr-2 h-4 w-4 flex-shrink-0",
-                                selectedValues[unit].includes(value) ? "opacity-100" : "opacity-0"
+                                'mr-2 h-4 w-4 flex-shrink-0',
+                                selectedValues[unit].includes(value) ? 'opacity-100' : 'opacity-0'
                               )}
                             />
                             <span className="truncate">{value}</span>
@@ -321,26 +307,27 @@ export default function CronExpressionBuilder() {
                   onChange={handleCustomExpressionChange}
                   className="font-mono"
                 />
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={handleCopy}
-                  disabled={!isValid}
-                >
+                <Button variant="outline" size="icon" onClick={handleCopy} disabled={!isValid}>
                   <Copy className="h-4 w-4" />
                 </Button>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
-              <div className={`w-4 h-4 rounded-full flex items-center justify-center ${isValid ? 'bg-green-500' : 'bg-red-500'}`}>
+              <div
+                className={`w-4 h-4 rounded-full flex items-center justify-center ${isValid ? 'bg-green-500' : 'bg-red-500'}`}
+              >
                 {isValid ? (
                   <Check className="h-3 w-3 text-white" />
                 ) : (
                   <X className="h-3 w-3 text-white" />
                 )}
               </div>
-              <span className={isValid ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
+              <span
+                className={
+                  isValid ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+                }
+              >
                 {isValid ? 'Valid cron expression' : 'Invalid cron expression'}
               </span>
             </div>

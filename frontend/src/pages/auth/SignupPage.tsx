@@ -28,7 +28,13 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 
 // Define the form schema using Zod
@@ -43,13 +49,15 @@ const formSchema = z.object({
   profilePicture: z.string().url().optional().or(z.literal('')),
   dateOfBirth: z.date().optional(),
   gender: z.enum(['male', 'female', 'other']).optional(),
-  preferences: z.object({
-    language: z.string(),
-    theme: z.enum(['light', 'dark']),
-    notifications: z.boolean(),
-  }).optional(),
+  preferences: z
+    .object({
+      language: z.string(),
+      theme: z.enum(['light', 'dark']),
+      notifications: z.boolean(),
+    })
+    .optional(),
   acceptTerms: z.boolean().refine(val => val, {
-    message: "You must accept the terms and conditions",
+    message: 'You must accept the terms and conditions',
   }),
 });
 
@@ -120,7 +128,8 @@ export default function SignupPage() {
 
       // Show success toast
       toast.success('Registration Successful', {
-        description: 'Your account has been created! Please check your email to verify your account.',
+        description:
+          'Your account has been created! Please check your email to verify your account.',
       });
 
       // Navigate to login page
@@ -224,7 +233,11 @@ export default function SignupPage() {
                     <FormItem>
                       <FormLabel>Profile Picture URL</FormLabel>
                       <FormControl>
-                        <Input placeholder="https://example.com/photo.jpg" {...field} disabled={isLoading} />
+                        <Input
+                          placeholder="https://example.com/photo.jpg"
+                          {...field}
+                          disabled={isLoading}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -237,7 +250,11 @@ export default function SignupPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Gender</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value} disabled={isLoading}>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        disabled={isLoading}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select gender" />
@@ -264,18 +281,14 @@ export default function SignupPage() {
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
-                              variant={"outline"}
+                              variant={'outline'}
                               className={cn(
-                                "pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
+                                'pl-3 text-left font-normal',
+                                !field.value && 'text-muted-foreground'
                               )}
                               disabled={isLoading}
                             >
-                              {field.value ? (
-                                format(field.value, "PPP")
-                              ) : (
-                                <span>Pick a date</span>
-                              )}
+                              {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
                           </FormControl>
@@ -285,9 +298,7 @@ export default function SignupPage() {
                             mode="single"
                             selected={field.value}
                             onSelect={field.onChange}
-                            disabled={(date) =>
-                              date > new Date() || date < new Date("1900-01-01")
-                            }
+                            disabled={date => date > new Date() || date < new Date('1900-01-01')}
                             initialFocus
                           />
                         </PopoverContent>
@@ -325,7 +336,11 @@ export default function SignupPage() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Language</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value} disabled={isLoading}>
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                            disabled={isLoading}
+                          >
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="Select language" />
@@ -349,7 +364,11 @@ export default function SignupPage() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Theme</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value} disabled={isLoading}>
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                            disabled={isLoading}
+                          >
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="Select theme" />
@@ -371,12 +390,8 @@ export default function SignupPage() {
                       render={({ field }) => (
                         <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                           <div className="space-y-0.5">
-                            <FormLabel className="text-base">
-                              Email Notifications
-                            </FormLabel>
-                            <FormDescription>
-                              Receive important updates via email
-                            </FormDescription>
+                            <FormLabel className="text-base">Email Notifications</FormLabel>
+                            <FormDescription>Receive important updates via email</FormDescription>
                           </div>
                           <FormControl>
                             <Switch

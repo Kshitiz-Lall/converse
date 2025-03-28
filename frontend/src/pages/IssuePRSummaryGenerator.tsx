@@ -14,12 +14,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import axios from 'axios';
 import { ArrowLeft, ArrowRight, Copy, Github, Gitlab, Info, Loader2 } from 'lucide-react';
 import { useState } from 'react';
@@ -91,25 +86,24 @@ export default function IssuePRSummaryPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10">
-       <div className="flex items-center justify-between mb-8">
-          <Link
-            to="/dashboard"
-            className="flex items-center text-primary hover:text-primary/80 transition-colors"
-          >
-            <ArrowLeft className="h-5 w-5 mr-2" />
-            <span>Back to Dashboard</span>
-          </Link>
-          <h1 className="text-3xl font-bold mb-2">Issue & PR Summary Generator</h1>
-          <Link
-            to="/issue-pr-summary/docs"
-            className="flex items-center text-primary hover:text-primary/80 transition-colors"
-          >
-            <span>Goto Documentation</span>
-            <ArrowRight className="h-5 w-5 ml-2" />
-          </Link>
-        </div>
+      <div className="flex items-center justify-between mb-8">
+        <Link
+          to="/dashboard"
+          className="flex items-center text-primary hover:text-primary/80 transition-colors"
+        >
+          <ArrowLeft className="h-5 w-5 mr-2" />
+          <span>Back to Dashboard</span>
+        </Link>
+        <h1 className="text-3xl font-bold mb-2">Issue & PR Summary Generator</h1>
+        <Link
+          to="/issue-pr-summary/docs"
+          className="flex items-center text-primary hover:text-primary/80 transition-colors"
+        >
+          <span>Goto Documentation</span>
+          <ArrowRight className="h-5 w-5 ml-2" />
+        </Link>
+      </div>
       <div className="text-center mb-10">
-
         <p className="text-muted-foreground">
           Automatically generate summaries for GitHub/GitLab issues and pull requests using AI
         </p>
@@ -117,7 +111,7 @@ export default function IssuePRSummaryPage() {
 
       <Tabs
         value={activeTab}
-        onValueChange={(val) => setActiveTab(val as 'github' | 'gitlab')}
+        onValueChange={val => setActiveTab(val as 'github' | 'gitlab')}
         className="mb-6"
       >
         <TabsList className="grid w-full grid-cols-2 max-w-xs mx-auto">
@@ -222,26 +216,17 @@ export default function IssuePRSummaryPage() {
           </div>
 
           <div className="space-y-2">
-            <Label>
-              {activeTab === 'github' ? 'GitHub' : 'GitLab'} Access Token (optional)
-            </Label>
+            <Label>{activeTab === 'github' ? 'GitHub' : 'GitLab'} Access Token (optional)</Label>
             <Input
               type="password"
               placeholder={`${activeTab === 'github' ? 'GitHub' : 'GitLab'} personal access token`}
               value={token}
               onChange={e => setToken(e.target.value)}
             />
-            <p className="text-sm text-muted-foreground">
-              Required for private repositories
-            </p>
+            <p className="text-sm text-muted-foreground">Required for private repositories</p>
           </div>
 
-          <Button
-            onClick={handleSubmit}
-            disabled={loading}
-            className="w-full mt-4"
-            size="lg"
-          >
+          <Button onClick={handleSubmit} disabled={loading} className="w-full mt-4" size="lg">
             {loading ? (
               <>
                 <Loader2 className="animate-spin h-4 w-4 mr-2" />
@@ -257,12 +242,7 @@ export default function IssuePRSummaryPage() {
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-semibold">Generated Summary</h2>
             <div className="flex gap-2">
-              <Button
-                onClick={handleCopy}
-                size="sm"
-                variant="outline"
-                disabled={!summary}
-              >
+              <Button onClick={handleCopy} size="sm" variant="outline" disabled={!summary}>
                 <Copy className="h-4 w-4 mr-2" />
                 Copy
               </Button>
