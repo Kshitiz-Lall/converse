@@ -1,61 +1,82 @@
-import * as React from 'react';
-import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
-
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-} from '@/components/ui/navigation-menu';
-
 import { cn } from '@/lib/utils';
-import { devTools, aiTools } from '@/routes/index';
+import { aiTools, devTools } from '@/routes/index';
+import { ChevronDown, LogOut, Settings, User } from 'lucide-react';
+import * as React from 'react';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { DropdownMenu, useDropdown } from '../custom/DropdownMenu';
 
 /* ──────────────────────────────── */
 /* Reusable List Item for Nav Menus */
 /* ──────────────────────────────── */
-interface ListItemProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+interface NavItemProps {
   title: string;
-  href: string;
+  to: string;
+  icon?: React.ReactNode;
   disabled?: boolean;
   children?: React.ReactNode;
+  className?: string;
+  active?: boolean;
 }
 
-const ListItem = React.forwardRef<HTMLAnchorElement, ListItemProps>(
-  ({ className, title, children, href, disabled, ...props }, ref) => {
+const NavItem = ({
+  title,
+  to,
+  icon,
+  disabled,
+  children,
+  className,
+  active = false,
+  ...props
+}: NavItemProps & React.AnchorHTMLAttributes<HTMLAnchorElement>) => {
+  const { closeMenu } = useDropdown();
+
+  const content = (
+    <>
+      {icon && <span className="flex-shrink-0">{icon}</span>}
+      <span>{title}</span>
+      {children}
+    </>
+  );
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (props.onClick) props.onClick(e);
+    closeMenu();
+  };
+
+  if (disabled || to === '#') {
     return (
       <li>
-        <NavigationMenuLink asChild>
-          <a
-            ref={ref}
-            href={href}
-            onClick={e => disabled && e.preventDefault()}
-            className={cn(
-              'block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground',
-              {
-                'opacity-50 cursor-not-allowed hover:bg-transparent': disabled,
-              },
-              className
-            )}
-            {...props}
-          >
-            <div className="text-sm font-medium leading-none">
-              {title}
-              {disabled && (
-                <span className="ml-2 text-xs text-muted-foreground">(Coming Soon)</span>
-              )}
-            </div>
-            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">{children}</p>
-          </a>
-        </NavigationMenuLink>
+        <span
+          className={cn(
+            'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors opacity-50 cursor-not-allowed',
+            className
+          )}
+        >
+          {content}
+        </span>
       </li>
     );
   }
-);
-ListItem.displayName = 'ListItem';
+
+  return (
+    <li>
+      <Link
+        to={to}
+        onClick={handleClick}
+        className={cn(
+          'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+          active
+            ? 'bg-accent text-accent-foreground'
+            : 'hover:bg-accent hover:text-accent-foreground',
+          className
+        )}
+        {...props}
+      >
+        {content}
+      </Link>
+    </li>
+  );
+};
 
 /* ────────────── */
 /* Nav Menu Logic */
@@ -65,7 +86,7 @@ function NavMenu() {
   const navigate = useNavigate();
   const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
 
-  const handleLogout = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleLogout = (e: React.MouseEvent) => {
     e.preventDefault();
     localStorage.removeItem('auth_token');
     sessionStorage.removeItem('auth_token');
@@ -73,115 +94,100 @@ function NavMenu() {
   };
 
   return (
-    <NavigationMenu className="flex w-full justify-between items-center">
+    <nav className="flex w-full justify-between items-center">
       {/* LEFT SIDE NAVIGATION */}
-      <NavigationMenuList className="flex space-x-2">
-        {!token && (
-          <NavigationMenuItem>
-            <Link to="/">
-              <NavigationMenuLink
-                className={navigationMenuTriggerStyle()}
-                active={location.pathname === '/'}
-              >
-                Home
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
-        )}
+      <ul className="flex items-center space-x-1">
+        {!token && <NavItem title="Home" to="/" active={location.pathname === '/'} />}
 
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Developer Tools</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-              {devTools.map(tool => (
-                <ListItem
-                  key={tool.id}
-                  title={tool.title}
-                  href={tool.available ? tool.path : '#'}
-                  disabled={!tool.available}
-                >
-                  <div className="flex items-center">
-                    {tool.icon}
-                    <span>{tool.description}</span>
-                  </div>
-                </ListItem>
-              ))}
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
+        {/* Developer Tools Dropdown */}
+        <DropdownMenu trigger={<span>Developer Tools</span>}>
+          {devTools.map(tool => (
+            <NavItem
+              key={tool.id}
+              title={tool.title}
+              to={tool.available ? tool.path : '#'}
+              icon={tool.icon}
+              disabled={!tool.available}
+            >
+              {!tool.available && (
+                <span className="ml-auto text-xs text-muted-foreground">Coming Soon</span>
+              )}
+            </NavItem>
+          ))}
+        </DropdownMenu>
 
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>AI Tools</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-              {aiTools.map(tool => (
-                <ListItem
-                  key={tool.id}
-                  title={tool.title}
-                  href={tool.available ? tool.path : '#'}
-                  disabled={!tool.available}
-                >
-                  <div className="flex items-center">
-                    {tool.icon}
-                    <span>{tool.description}</span>
-                  </div>
-                </ListItem>
-              ))}
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-      </NavigationMenuList>
+        {/* AI Tools Dropdown */}
+        <DropdownMenu trigger={<span>AI Tools</span>}>
+          {aiTools.map(tool => (
+            <NavItem
+              key={tool.id}
+              title={tool.title}
+              to={tool.available ? tool.path : '#'}
+              icon={tool.icon}
+              disabled={!tool.available}
+            >
+              {!tool.available && (
+                <span className="ml-auto text-xs text-muted-foreground">Coming Soon</span>
+              )}
+            </NavItem>
+          ))}
+        </DropdownMenu>
+      </ul>
 
       {/* RIGHT SIDE - AUTH/PROFILE SECTION */}
       {token && (
-        <NavigationMenuList className="flex space-x-2">
-          <NavigationMenuItem>
-            <Link to="/dashboard">
-              <NavigationMenuLink
-                className={navigationMenuTriggerStyle()}
-                active={location.pathname === '/dashboard'}
-              >
-                Dashboard
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuTrigger>Profile</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                <ListItem title="Profile" href="/profile">
-                  View and edit your profile
-                </ListItem>
-                <ListItem title="Admin" href="/admin-panel">
-                  Admin panel access
-                </ListItem>
-                <ListItem title="Logout" href="#" onClick={handleLogout}>
-                  Logout from your account
-                </ListItem>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-        </NavigationMenuList>
+        <ul className="flex items-center space-x-1">
+          {/* Profile Dropdown */}
+          <DropdownMenu
+            trigger={
+              <div className="flex items-center gap-1">
+                <User className="h-4 w-4" />
+                <span>Profile</span>
+              </div>
+            }
+            align="right"
+          >
+            <NavItem
+              title="Profile"
+              to="/profile"
+              icon={<User className="h-4 w-4" />}
+              active={location.pathname === '/profile'}
+            />
+            <NavItem
+              title="Admin"
+              to="/admin-panel"
+              icon={<Settings className="h-4 w-4" />}
+              active={location.pathname === '/admin-panel'}
+            />
+            <NavItem
+              title="Logout"
+              to="#"
+              icon={<LogOut className="h-4 w-4" />}
+              onClick={handleLogout}
+            />
+          </DropdownMenu>
+        </ul>
       )}
-    </NavigationMenu>
+    </nav>
   );
 }
-
 
 /* ──────────────────── */
 /* Layout with NavMenu  */
 /* ──────────────────── */
 export function Layout() {
+  const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center">
+        <div className="p-2 mx-2 flex h-16 items-center">
           <div className="mx-4 bg-neutral-900 rounded-[5px] hidden md:flex">
-            <a className="mr-4 flex items-center space-x-2" href="/">
+            <Link to={token ? '/dashboard' : '/'} className="mr-4 flex items-center space-x-2">
               <span className="ml-4 text-white hidden font-secondary text-2xl sm:inline-block">
                 Devtoolkit;
               </span>
-            </a>
+            </Link>
           </div>
           <NavMenu />
         </div>
