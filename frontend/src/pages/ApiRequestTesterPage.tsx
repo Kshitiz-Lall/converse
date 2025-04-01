@@ -1,26 +1,14 @@
+import { apiCollections, apiEnvironments } from '@/api/ApiTesting';
+import { resolveEnvVariables } from '@/lib/resolveEnv';
+import { clearHistory, executeRequest, getHistory } from '@/services/testServiceApi';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  apiCollections,
-  apiEnvironments,
-} from '@/api/ApiTesting';
-import { clearHistory, executeRequest, getHistory } from '@/services/apiTesterService';
-import { resolveEnvVariables } from '@/lib/resolveEnv';
 
 import { ApiRequest, ApiResponse, Collection, Environment, HistoryItem } from '@/types/apiTester';
 
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  ArrowRight,
-  Folder,
-  History,
-  Home,
-  RefreshCw,
-  Save,
-  Send,
-  Settings,
-} from 'lucide-react';
+import { ArrowRight, Folder, History, Home, RefreshCw, Send, Settings } from 'lucide-react';
 
 import CollectionsPanel from '@/components/api-tester/CollectionsPanel';
 import EnvironmentsPanel from '@/components/api-tester/EnvironmentsPanel';
@@ -171,11 +159,7 @@ export default function ApiRequestTesterPage() {
                       </Button>
                     </div>
                   </div>
-                  <RequestForm
-                    request={request}
-                    setRequest={setRequest}
-                    isLoading={isLoading}
-                  />
+                  <RequestForm request={request} setRequest={setRequest} isLoading={isLoading} />
                 </div>
               </TabsContent>
 
@@ -214,10 +198,7 @@ export default function ApiRequestTesterPage() {
               </TabsContent>
 
               <TabsContent value="collections">
-                <CollectionsPanel
-                  collections={collections}
-                  onLoadRequest={loadFromHistory}
-                />
+                <CollectionsPanel collections={collections} onLoadRequest={loadFromHistory} />
               </TabsContent>
 
               <TabsContent value="environments">

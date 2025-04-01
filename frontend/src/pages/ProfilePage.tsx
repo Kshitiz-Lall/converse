@@ -1,4 +1,3 @@
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -108,6 +107,7 @@ interface ProfileData {
   };
   createdAt: string;
   updatedAt: string;
+  lastLogin?: string;
 }
 
 const ProfilePage: React.FC = () => {
