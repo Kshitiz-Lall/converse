@@ -50,7 +50,7 @@ const landingPageContent = {
 };
 
 const LandingPage = () => (
-  <div className="min-h-screen bg-gray-50 font-tertiary">
+  <div className="min-h-screen font-tertiary">
     {/* Hero Section */}
     <div className="container mx-auto px-6 py-24 text-center">
       <h1 className="text-6xl font-secondary text-primary font-extrabold mb-4">
@@ -69,7 +69,7 @@ const LandingPage = () => (
     </div>
 
     {/* Story Section */}
-    <div className="bg-white py-16">
+    <div className="py-16">
       <div className="container mx-auto px-6 text-center">
         <h2 className="text-4xl font-secondary mb-6">📖 Our Story</h2>
         <p className="text-lg text-gray-700 max-w-4xl mx-auto">{landingPageContent.story}</p>
@@ -77,7 +77,7 @@ const LandingPage = () => (
     </div>
 
     {/* Features Section */}
-    <div className="bg-gray-50 py-16">
+    <div className="py-16">
       <div className="container mx-auto px-6">
         <h2 className="text-4xl font-secondary text-center mb-12">
           🌟 Explore Our Powerful Features
@@ -107,7 +107,7 @@ const LandingPage = () => (
     </div>
 
     {/* Modular Section */}
-    <div className="bg-white py-16 text-center">
+    <div className="py-16 text-center">
       <div className="container mx-auto px-6">
         <h2 className="text-4xl font-secondary mb-6">Modular and Scalable</h2>
         <p className="text-lg text-gray-700 max-w-4xl mx-auto">{landingPageContent.modular}</p>

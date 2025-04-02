@@ -41,121 +41,7 @@ import CronExpressionBuilder from '@/pages/CronExpressionBuilder';
 import IssuePRSummaryGenerator from '@/pages/IssuePRSummaryGenerator';
 import Profile from '@/pages/ProfilePage';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
-
-// Centralized tool configurations
-export const devTools = [
-  {
-    id: 'data-format-converter',
-    title: 'Data Format Converter',
-    description: 'Convert between JSON, YAML, and XML formats',
-    icon: <FileJson className="h-10 w-10 mr-2" />,
-    path: '/data-format',
-    available: true,
-  },
-  {
-    id: 'image-optimizer',
-    title: 'Image Optimizer',
-    description: 'Compress and resize images for the web',
-    icon: <Image className="h-10 w-10 mr-2" />,
-    path: '/image-optimizer',
-    available: true,
-  },
-  {
-    id: 'regex-playground',
-    title: 'Regex Playground',
-    description: 'Test and validate regular expressions',
-    icon: <Regex className="h-10 w-10 mr-2" />,
-    path: '/regex-playground',
-    available: true,
-  },
-  {
-    id: 'api-tester',
-    title: 'API Request Tester',
-    description: 'Test API endpoints with different HTTP methods',
-    icon: <Zap className="h-10 w-10 mr-2" />,
-    path: '/api-tester',
-    available: true,
-  },
-  {
-    id: 'cron-builder',
-    title: 'Cron Expression Builder',
-    description: 'Build and validate cron expressions',
-    icon: <Clock className="h-10 w-10 mr-2" />,
-    path: '/cron-builder',
-    available: true,
-  },
-];
-
-export const aiTools = [
-  // AI-Powered Features
-  {
-    id: 'error-debugger',
-    title: 'AI Debugger',
-    description: 'AI-driven error detection and suggestions for bug fixing',
-    icon: <FileCog className="h-10 w-10 mr-2" />,
-    path: '/error-debugger',
-    available: false,
-    category: 'AI-Powered Features',
-  },
-  {
-    id: 'ai-test-generator',
-    title: 'AI Test Case Generator',
-    description: 'Generate unit test cases from your code automatically using AI',
-    icon: <FileText className="h-10 w-10 mr-2" />,
-    path: '/ai-test-generator',
-    available: false,
-    category: 'AI-Powered Features',
-  },
-  {
-    id: 'ai-stack-overflow-search',
-    title: 'AI-Based Stack Overflow Search',
-    description: 'Automatically fetch relevant answers from Stack Overflow when an error occurs.',
-    icon: <FileText className="h-10 w-10 mr-2" />,
-    path: '/stack-overflow-search',
-    available: false,
-    category: 'AI-Powered Features',
-  },
-
-  // Project & Collaboration Tools
-  {
-    id: 'issue-pr-summary-generator',
-    title: 'Issue & PR Summary Generator',
-    description: 'Summarize GitHub/GitLab issues, PRs, and changes using AI.',
-    icon: <FileText className="h-10 w-10 mr-2" />,
-    path: '/issue-pr-summary',
-    available: true,
-    category: 'Project & Collaboration Tools',
-  },
-  {
-    id: 'documentation-auto-generator',
-    title: 'Documentation Auto-Generator',
-    description: 'Generate inline documentation and README files from code.',
-    icon: <FileCog className="h-10 w-10 mr-2" />,
-    path: '/documentation-auto-generator',
-    available: false,
-    category: 'Project & Collaboration Tools',
-  },
-
-  // DevOps & Automation Tools
-  {
-    id: 'dockerfile-generator',
-    title: 'Dockerfile Generator & Optimizer',
-    description: 'AI-assisted Dockerfile creation for better efficiency.',
-    icon: <FileCog className="h-10 w-10 mr-2" />,
-    path: '/dockerfile-generator',
-    available: false,
-    category: 'DevOps & Automation Tools',
-  },
-  {
-    id: 'ci-cd-config-generator',
-    title: 'CI/CD Config Generator',
-    description: 'Generate GitHub Actions, GitLab CI, or Jenkins pipelines with a simple UI.',
-    icon: <FileText className="h-10 w-10 mr-2" />,
-    path: '/ci-cd-config-generator',
-    available: false,
-    category: 'DevOps & Automation Tools',
-  },
-];
+import { UUIDGenerator } from '@/pages/UUIDGenerator';
 
 // Loading component for suspense fallback
 const Loader = () => (
@@ -163,6 +49,214 @@ const Loader = () => (
     <div className="h-16 w-16 animate-spin rounded-full border-b-2 border-t-2 border-primary"></div>
   </div>
 );
+
+export const toolCategories = [
+  {
+    category: 'Code Utilities',
+    tools: [
+      {
+        id: 'data-format-converter',
+        title: 'Data Format Converter',
+        description: 'Convert between JSON, YAML, and XML formats',
+        icon: <FileJson className="h-10 w-10 mr-2" />,
+        path: '/data-format',
+        available: true,
+      },
+      {
+        id: 'regex-playground',
+        title: 'Regex Playground',
+        description: 'Test and validate regular expressions',
+        icon: <Regex className="h-10 w-10 mr-2" />,
+        path: '/regex-playground',
+        available: true,
+      },
+      {
+        id: 'uuid-generator',
+        title: 'UUID Generator',
+        description: 'Generate UUIDs (v1, v4) for testing and development',
+        icon: <FileCog className="h-10 w-10 mr-2" />,
+        path: '/uuid-generator',
+        available: true,
+      },
+      {
+        id: 'jwt-tool',
+        title: 'JWT Encoder / Decoder',
+        description: 'Inspect, verify, and create JWT tokens',
+        icon: <FileJson className="h-10 w-10 mr-2" />,
+        path: '/jwt-tool',
+        available: false,
+      },
+      {
+        id: 'hash-generator',
+        title: 'Hash Generator',
+        description: 'Create MD5, SHA1, and SHA256 hashes',
+        icon: <Zap className="h-10 w-10 mr-2" />,
+        path: '/hash-generator',
+        available: false,
+      },
+    ],
+  },
+  {
+    category: 'Project & Collaboration Tools',
+    tools: [
+      {
+        id: 'issue-pr-summary-generator',
+        title: 'Issue & PR Summary Generator',
+        description: 'Summarize GitHub/GitLab issues, PRs, and changes using AI',
+        icon: <FileText className="h-10 w-10 mr-2" />,
+        path: '/issue-pr-summary',
+        available: true,
+      },
+      {
+        id: 'documentation-auto-generator',
+        title: 'Documentation Auto-Generator',
+        description: 'Generate inline documentation and README files from code',
+        icon: <FileCog className="h-10 w-10 mr-2" />,
+        path: '/documentation-auto-generator',
+        available: false,
+      },
+    ],
+  },
+
+  {
+    category: 'Data and Database Tools',
+    tools: [
+      {
+        id: 'cron-builder',
+        title: 'Cron Expression Builder',
+        description: 'Build and validate cron expressions',
+        icon: <Clock className="h-10 w-10 mr-2" />,
+        path: '/cron-builder',
+        available: true,
+      },
+    ],
+  },
+
+  {
+    category: 'Web & Network Tools',
+    tools: [
+      {
+        id: 'api-tester',
+        title: 'API Request Tester',
+        description: 'Test API endpoints with different HTTP methods',
+        icon: <Zap className="h-10 w-10 mr-2" />,
+        path: '/api-tester',
+        available: true,
+      },
+    ],
+  },
+  {
+    category: 'Security Tools',
+    tools: [
+      {
+        id: 'jwt-tool',
+        title: 'JWT Encoder / Decoder',
+        description: 'Inspect, verify, and create JWT tokens',
+        icon: <FileJson className="h-10 w-10 mr-2" />,
+        path: '/jwt-tool',
+        available: false,
+      },
+      {
+        id: 'hash-generator',
+        title: 'Hash Generator',
+        description: 'Create MD5, SHA1, and SHA256 hashes',
+        icon: <Zap className="h-10 w-10 mr-2" />,
+        path: '/hash-generator',
+        available: false,
+      },
+    ],
+  },
+
+  {
+    category: 'DevOps & Automation Tools',
+    tools: [
+      {
+        id: 'dockerfile-generator',
+        title: 'Dockerfile Generator & Optimizer',
+        description: 'AI-assisted Dockerfile creation for better efficiency',
+        icon: <FileCog className="h-10 w-10 mr-2" />,
+        path: '/dockerfile-generator',
+        available: false,
+      },
+      {
+        id: 'ci-cd-config-generator',
+        title: 'CI/CD Config Generator',
+        description: 'Generate GitHub Actions, GitLab CI, or Jenkins pipelines with a simple UI',
+        icon: <FileText className="h-10 w-10 mr-2" />,
+        path: '/ci-cd-config-generator',
+        available: false,
+      },
+    ],
+  },
+
+  {
+    category: 'Productivity / Miscellaneous',
+    tools: [
+      {
+        id: 'image-optimizer',
+        title: 'Image Optimizer',
+        description: 'Compress and resize images for the web',
+        icon: <Image className="h-10 w-10 mr-2" />,
+        path: '/image-optimizer',
+        available: true,
+      },
+      {
+        id: 'lorem-ipsum',
+        title: 'Lorem Ipsum Generator',
+        description: 'Generate placeholder text for UI designs and wireframes',
+        icon: <FileText className="h-10 w-10 mr-2" />,
+        path: '/lorem-ipsum',
+        available: false,
+      },
+      {
+        id: 'color-converter',
+        title: 'Color Converter',
+        description: 'Convert between HEX, RGB, HSL color formats',
+        icon: <FileText className="h-10 w-10 mr-2" />,
+        path: '/color-converter',
+        available: false,
+      },
+      {
+        id: 'diff-checker',
+        title: 'Diff Checker',
+        description: 'Compare two pieces of text to see the differences',
+        icon: <FileText className="h-10 w-10 mr-2" />,
+        path: '/diff-checker',
+        available: false,
+      },
+    ],
+  },
+  {
+    category: 'AI-Powered Features',
+    tools: [
+      {
+        id: 'error-debugger',
+        title: 'AI Debugger',
+        description: 'AI-driven error detection and suggestions for bug fixing',
+        icon: <FileCog className="h-10 w-10 mr-2" />,
+        path: '/error-debugger',
+        available: false,
+      },
+      {
+        id: 'ai-test-generator',
+        title: 'AI Test Case Generator',
+        description: 'Generate unit test cases from your code automatically using AI',
+        icon: <FileText className="h-10 w-10 mr-2" />,
+        path: '/ai-test-generator',
+        available: false,
+      },
+      {
+        id: 'ai-stack-overflow-search',
+        title: 'AI-Based Stack Overflow Search',
+        description:
+          'Automatically fetch relevant answers from Stack Overflow when an error occurs',
+        icon: <FileText className="h-10 w-10 mr-2" />,
+        path: '/stack-overflow-search',
+        available: false,
+      },
+    ],
+  },
+];
 
 export const routes: RouteObject[] = [
   {
@@ -268,6 +362,16 @@ export const routes: RouteObject[] = [
           <RequireAuth>
             <Suspense fallback={<Loader />}>
               <AIDebuggerPage />
+            </Suspense>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: '/uuid-generator',
+        element: (
+          <RequireAuth>
+            <Suspense fallback={<Loader />}>
+              <UUIDGenerator />
             </Suspense>
           </RequireAuth>
         ),
@@ -411,3 +515,9 @@ export const routes: RouteObject[] = [
     ],
   },
 ];
+
+// Add these helper exports at the bottom
+export const allTools = toolCategories.flatMap(category => category.tools);
+export const devTools = toolCategories.find(c => c.category === 'Code Utilities')?.tools || [];
+export const aiTools =
+  toolCategories.filter(c => c.category.includes('AI'))?.flatMap(c => c.tools) || [];

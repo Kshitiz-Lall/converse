@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
-import { aiTools, devTools } from '@/routes/index';
-import { ChevronDown, LogOut, Settings, User } from 'lucide-react';
+import { toolCategories } from '@/routes/index';
+import { LogOut, Settings, User } from 'lucide-react';
 import * as React from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { DropdownMenu, useDropdown } from '../custom/DropdownMenu';
@@ -97,41 +97,25 @@ function NavMenu() {
     <nav className="flex w-full justify-between items-center">
       {/* LEFT SIDE NAVIGATION */}
       <ul className="flex items-center space-x-1">
-        {!token && <NavItem title="Home" to="/" active={location.pathname === '/'} />}
+        {/* {!token && <NavItem title="Home" to="/" active={location.pathname === '/'} />}
 
-        {/* Developer Tools Dropdown */}
-        <DropdownMenu trigger={<span>Developer Tools</span>}>
-          {devTools.map(tool => (
-            <NavItem
-              key={tool.id}
-              title={tool.title}
-              to={tool.available ? tool.path : '#'}
-              icon={tool.icon}
-              disabled={!tool.available}
-            >
-              {!tool.available && (
-                <span className="ml-auto text-xs text-muted-foreground">Coming Soon</span>
-              )}
-            </NavItem>
-          ))}
-        </DropdownMenu>
-
-        {/* AI Tools Dropdown */}
-        <DropdownMenu trigger={<span>AI Tools</span>}>
-          {aiTools.map(tool => (
-            <NavItem
-              key={tool.id}
-              title={tool.title}
-              to={tool.available ? tool.path : '#'}
-              icon={tool.icon}
-              disabled={!tool.available}
-            >
-              {!tool.available && (
-                <span className="ml-auto text-xs text-muted-foreground">Coming Soon</span>
-              )}
-            </NavItem>
-          ))}
-        </DropdownMenu>
+        {toolCategories.map(category => (
+          <DropdownMenu key={category.category} trigger={<span>{category.category}</span>}>
+            {category.tools.map(tool => (
+              <NavItem
+                key={tool.id}
+                title={tool.title}
+                to={tool.available ? tool.path : '#'}
+                icon={tool.icon}
+                disabled={!tool.available}
+              >
+                {!tool.available && (
+                  <span className="ml-auto text-xs text-muted-foreground">Coming Soon</span>
+                )}
+              </NavItem>
+            ))}
+          </DropdownMenu>
+        ))} */}
       </ul>
 
       {/* RIGHT SIDE - AUTH/PROFILE SECTION */}
@@ -179,7 +163,7 @@ export function Layout() {
   const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col">
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="p-2 mx-2 flex h-16 items-center">
           <div className="mx-4 bg-neutral-900 rounded-[5px] hidden md:flex">

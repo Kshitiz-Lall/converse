@@ -1,4 +1,4 @@
-import { apiCollections, apiEnvironments } from '@/api/ApiTesting';
+import { apiCollections, apiEnvironments } from '@/services/ApiTesting';
 import { resolveEnvVariables } from '@/lib/resolveEnv';
 import { clearHistory, executeRequest, getHistory } from '@/services/testServiceApi';
 import { useEffect, useState } from 'react';
@@ -112,7 +112,7 @@ export default function ApiRequestTesterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <div className="container mx-auto p-4 py-8">
         <div className="flex items-center justify-between mb-4">
           <Link to="/dashboard" className="flex items-center text-primary">
