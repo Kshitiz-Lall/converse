@@ -301,7 +301,7 @@ export default function DataFormatPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Input Section */}
-          <div className="flex flex-col gap-4 bg-white rounded-lg shadow-md p-5">
+          <div className="flex flex-col gap-4 rounded-lg shadow-md p-5">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold">{APP_TEXT.input}</h2>
               <div className="flex gap-2">
@@ -355,7 +355,7 @@ export default function DataFormatPage() {
               onValueChange={value => setInputFormat(value as DataFormat)}
               disabled={isConverting || isFormatting}
             >
-              <SelectTrigger className="bg-gray-50 border">
+              <SelectTrigger className=" border">
                 <SelectValue placeholder="Select input format" />
               </SelectTrigger>
               <SelectContent>
@@ -372,7 +372,7 @@ export default function DataFormatPage() {
                 FORMAT_OPTIONS.find(f => f.value === inputFormat)?.placeholder ||
                 'Enter your data here...'
               }
-              className="min-h-[300px] font-mono text-sm bg-gray-50 border"
+              className="min-h-[300px] font-mono text-sm  border"
               value={inputText}
               onChange={e => setInputText(e.target.value)}
               disabled={isConverting || isFormatting}
@@ -412,7 +412,7 @@ export default function DataFormatPage() {
           </div>
 
           {/* Output Section */}
-          <div className="flex flex-col gap-4 bg-white rounded-lg shadow-md p-5">
+          <div className="flex flex-col gap-4 rounded-lg shadow-md p-5">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold">{APP_TEXT.output}</h2>
               <div className="flex gap-2">
@@ -448,7 +448,7 @@ export default function DataFormatPage() {
               onValueChange={value => setOutputFormat(value as DataFormat)}
               disabled={isConverting || isFormatting}
             >
-              <SelectTrigger className="bg-gray-50 border">
+              <SelectTrigger className=" border">
                 <SelectValue placeholder="Select output format" />
               </SelectTrigger>
               <SelectContent>
@@ -462,7 +462,7 @@ export default function DataFormatPage() {
 
             <Textarea
               placeholder="Converted output will appear here..."
-              className="min-h-[300px] font-mono text-sm bg-gray-50 border"
+              className="min-h-[300px] font-mono text-sm  border"
               value={outputText}
               readOnly
             />

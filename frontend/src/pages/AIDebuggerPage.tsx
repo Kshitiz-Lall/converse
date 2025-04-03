@@ -1,4 +1,3 @@
-// src/pages/AIDebuggerPage.tsx
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,6 +20,27 @@ import {
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Slider } from '@/components/ui/slider';
 
+// Constants for Labels, Languages, Analysis Types, and Icons
+const LANGUAGES = [
+  'javascript', 'typescript', 'python', 'java', 'csharp', 'php', 'ruby', 'go', 'rust', 'cpp'
+];
+
+const ANALYSIS_TYPES = [
+  { value: 'error', label: 'Error Debugging' },
+  { value: 'static', label: 'Static Analysis' },
+  { value: 'performance', label: 'Performance Check' }
+];
+
+const ICONS = {
+  bug: <Bug className="h-8 w-8 text-red-500" />,
+  sparkles: <Sparkles className="h-4 w-4 mr-2" />,
+  loader: <Loader2 className="animate-spin h-4 w-4 mr-2" />,
+  terminal: <Terminal className="h-5 w-5" />,
+  code: <Code className="h-5 w-5" />,
+  copy: <Copy className="h-4 w-4 mr-2" />
+};
+
+// Component
 export default function AIDebuggerPage() {
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
@@ -35,19 +55,6 @@ export default function AIDebuggerPage() {
   const [loading, setLoading] = useState(false);
   const [debugDepth, setDebugDepth] = useState(50);
   const [activeTab, setActiveTab] = useState('input');
-
-  const languages = [
-    'javascript',
-    'typescript',
-    'python',
-    'java',
-    'csharp',
-    'php',
-    'ruby',
-    'go',
-    'rust',
-    'cpp',
-  ];
 
   const handleSubmit = async () => {
     if (!code) {
@@ -124,7 +131,7 @@ console.log(calculateTotal(cart));`);
     <div className="max-w-7xl mx-auto px-4 py-10">
       <div className="text-center mb-10">
         <h1 className="text-3xl font-bold mb-2 flex items-center justify-center gap-2">
-          <Bug className="h-8 w-8 text-red-500" />
+          {ICONS.bug}
           AI Debugger
         </h1>
         <p className="text-muted-foreground">
@@ -163,7 +170,7 @@ console.log(calculateTotal(cart));`);
                       <SelectValue placeholder="Select language" />
                     </SelectTrigger>
                     <SelectContent>
-                      {languages.map(lang => (
+                      {LANGUAGES.map(lang => (
                         <SelectItem key={lang} value={lang}>
                           {lang.charAt(0).toUpperCase() + lang.slice(1)}
                         </SelectItem>
@@ -179,18 +186,12 @@ console.log(calculateTotal(cart));`);
                     onValueChange={val => setAnalysisType(val as any)}
                     className="flex flex-wrap gap-4 pt-2"
                   >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="error" id="error" />
-                      <Label htmlFor="error">Error Debugging</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="static" id="static" />
-                      <Label htmlFor="static">Static Analysis</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="performance" id="performance" />
-                      <Label htmlFor="performance">Performance Check</Label>
-                    </div>
+                    {ANALYSIS_TYPES.map(type => (
+                      <div key={type.value} className="flex items-center space-x-2">
+                        <RadioGroupItem value={type.value} id={type.value} />
+                        <Label htmlFor={type.value}>{type.label}</Label>
+                      </div>
+                    ))}
                   </RadioGroup>
                 </div>
 
@@ -235,12 +236,12 @@ console.log(calculateTotal(cart));`);
                 <Button onClick={handleSubmit} disabled={loading} className="w-full mt-4" size="lg">
                   {loading ? (
                     <>
-                      <Loader2 className="animate-spin h-4 w-4 mr-2" />
+                      {ICONS.loader}
                       Analyzing...
                     </>
                   ) : (
                     <>
-                      <Sparkles className="h-4 w-4 mr-2" />
+                      {ICONS.sparkles}
                       Analyze Code
                     </>
                   )}
@@ -254,13 +255,9 @@ console.log(calculateTotal(cart));`);
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <h3 className="font-semibold flex items-center gap-2">
-                        <Terminal className="h-5 w-5" />
+                        {ICONS.terminal}
                         Error Explanation
                       </h3>
-                      {/* <Badge variant={debugResults.severity === 'high' ? 'destructive' :
-                                    debugResults.severity === 'medium' ? 'warning' : 'default'}>
-                        {debugResults.severity} severity
-                      </Badge> */}
                     </div>
                     <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
                       <p className="text-sm">{debugResults.explanation}</p>
@@ -269,7 +266,7 @@ console.log(calculateTotal(cart));`);
 
                   <div className="space-y-4">
                     <h3 className="font-semibold flex items-center gap-2">
-                      <Code className="h-5 w-5" />
+                      {ICONS.code}
                       Suggested Fix
                     </h3>
                     <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
@@ -285,7 +282,7 @@ console.log(calculateTotal(cart));`);
                         size="sm"
                         onClick={() => handleCopy(debugResults.fixedCode)}
                       >
-                        <Copy className="h-4 w-4 mr-2" />
+                        {ICONS.copy}
                         Copy
                       </Button>
                     </div>
@@ -320,7 +317,7 @@ console.log(calculateTotal(cart));`);
                   size="sm"
                   onClick={() => handleCopy(JSON.stringify(debugResults, null, 2))}
                 >
-                  <Copy className="h-4 w-4 mr-2" />
+                  {ICONS.copy}
                   Copy All
                 </Button>
               </div>
@@ -361,7 +358,7 @@ console.log(calculateTotal(cart));`);
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center h-[300px] border-2 border-dashed rounded-lg text-muted-foreground">
-              <Bug className="h-10 w-10 mb-2" />
+              {ICONS.bug}
               <p>Debugging results will appear here</p>
               <p className="text-sm mt-2">Enter your code and click "Analyze Code"</p>
             </div>

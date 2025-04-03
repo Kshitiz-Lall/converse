@@ -31,6 +31,15 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { Moon, Sun } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useTheme } from '@/components/theme-provider';
+
 // Define form schema
 const profileSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -117,6 +126,8 @@ const ProfilePage: React.FC = () => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('profile');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const { setTheme } = useTheme();
 
   // Initialize profile form
   const profileForm = useForm<z.infer<typeof profileSchema>>({
@@ -694,29 +705,46 @@ const ProfilePage: React.FC = () => {
                           </FormItem>
                         )}
                       />
-
                       <FormField
                         control={preferencesForm.control}
                         name="theme"
                         render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Theme</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select theme" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="light">Light</SelectItem>
-                                <SelectItem value="dark">Dark</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
+                          <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                            <div className="space-y-0.5">
+                              <FormLabel className="text-base">Appearance</FormLabel>
+                              <FormDescription>Choose light or dark theme</FormDescription>
+                            </div>
+                            <FormControl>
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  type="button"
+                                  variant={field.value === 'light' ? 'default' : 'outline'}
+                                  size="icon"
+                                  onClick={() => {
+                                    field.onChange('light');
+                                    setTheme('light');
+                                  }}
+                                  aria-label="Set Light Theme"
+                                >
+                                  <Sun className="h-5 w-5" />
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant={field.value === 'dark' ? 'default' : 'outline'}
+                                  size="icon"
+                                  onClick={() => {
+                                    field.onChange('dark');
+                                    setTheme('dark');
+                                  }}
+                                  aria-label="Set Dark Theme"
+                                >
+                                  <Moon className="h-5 w-5" />
+                                </Button>
+                              </div>
+                            </FormControl>
                           </FormItem>
                         )}
                       />
-
                       <FormField
                         control={preferencesForm.control}
                         name="notifications"
@@ -732,7 +760,6 @@ const ProfilePage: React.FC = () => {
                           </FormItem>
                         )}
                       />
-
                       <Button type="submit" disabled={loading} className="w-full">
                         {loading ? (
                           <>
