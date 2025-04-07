@@ -9,8 +9,8 @@ function App() {
 
   return (
     <>
-      <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-        <Toaster />
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <Toaster richColors />
         <div className="font-primary">{routeElement}</div>
       </ThemeProvider>
     </>

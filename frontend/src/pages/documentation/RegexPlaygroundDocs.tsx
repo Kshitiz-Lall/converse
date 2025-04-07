@@ -500,7 +500,7 @@ const result = string.replace(/\\b(\\w+)\\b/g, (match, p1) => {
 
 export default function RegexPlaygroundDocs() {
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-background min-h-screen text-foreground">
       <div className="container mx-auto p-4 py-8">
         <div className="flex items-center justify-between mb-8">
           <Link
@@ -552,7 +552,7 @@ export default function RegexPlaygroundDocs() {
                     </Button>
                   </div>
 
-                  <div className="md:w-1/3 bg-gray-100 rounded-lg p-5">
+                  <div className="md:w-1/3 bg-muted rounded-lg p-5">
                     <h3 className="text-lg font-semibold mb-3 flex items-center">
                       <FileDown className="h-5 w-5 mr-2 text-primary" />
                       Quick Facts
@@ -562,11 +562,11 @@ export default function RegexPlaygroundDocs() {
                         <li
                           key={index}
                           className={
-                            index < QUICK_FACTS.length - 1 ? 'border-b border-gray-200 pb-2' : ''
+                            index < QUICK_FACTS.length - 1 ? 'border-b border-muted pb-2' : ''
                           }
                         >
-                          <p className="text-sm text-gray-500">{fact.label}</p>
-                          <p className="font-medium">{fact.value}</p>
+                          <p className="text-sm text-muted-foreground">{fact.label}</p>
+                          <p className="font-medium text-foreground">{fact.value}</p>
                         </li>
                       ))}
                     </ul>
@@ -718,11 +718,11 @@ export default function RegexPlaygroundDocs() {
                   ))}
                 </div>
 
-                <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mt-8">
+                <div className="bg-muted/20 border-l-4 border-primary p-4 mt-8 rounded-md">
                   <div className="flex items-start">
-                    <AlertCircle className="h-5 w-5 text-blue-500 mr-2 mt-0.5" />
+                    <AlertCircle className="h-5 w-5 text-primary mr-2 mt-0.5" />
                     <div>
-                      <p className="text-blue-800">
+                      <p className="text-muted-foreground">
                         <strong>Note:</strong> These patterns are starting points and may need to be
                         adjusted based on your specific requirements. For production use, consider
                         the trade-offs between strictness and flexibility in your validation logic.
@@ -836,7 +836,7 @@ export default function RegexPlaygroundDocs() {
                       className="border rounded-lg p-5 hover:shadow-md transition-shadow"
                     >
                       <h4 className="font-semibold text-lg mb-3">{pattern.name}</h4>
-                      <div className="bg-gray-100 p-3 rounded-md font-mono text-sm mb-3 overflow-x-auto">
+                      <div className="bg-muted p-3 rounded-md font-mono text-sm mb-3 overflow-x-auto">
                         {pattern.pattern}
                       </div>
                       <p className="text-gray-700 text-sm">{pattern.description}</p>

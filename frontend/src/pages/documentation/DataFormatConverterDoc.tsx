@@ -16,7 +16,7 @@ import { Link } from 'react-router-dom';
 
 export default function DataFormatConverterDocs() {
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="min-h-screen">
       <div className="container mx-auto p-4 py-8">
         <div className="flex items-center justify-between mb-8">
           <Link
@@ -46,12 +46,12 @@ export default function DataFormatConverterDocs() {
                 <div className="flex flex-col md:flex-row gap-8">
                   <div className="flex-1">
                     <h2 className="text-2xl font-bold mb-4">What is Data Format Conversion?</h2>
-                    <p className="mb-4 text-gray-700">
+                    <p className="mb-4 text-gray-500">
                       Data format conversion is the process of transforming data between different
                       structured formats like JSON, YAML, XML, and more. This is crucial for
                       interoperability between different systems, tools, and programming languages.
                     </p>
-                    <p className="mb-4 text-gray-700">
+                    <p className="mb-4 text-gray-500">
                       Our Data Format Converter tool provides a simple, intuitive interface to
                       convert and format data across various popular formats, ensuring your data
                       remains consistent and readable.
@@ -60,7 +60,7 @@ export default function DataFormatConverterDocs() {
                     <h3 className="text-xl font-semibold mt-6 mb-3">
                       Why Use a Data Format Converter?
                     </h3>
-                    <ul className="list-disc pl-5 space-y-2 mb-6 text-gray-700">
+                    <ul className="list-disc pl-5 space-y-2 mb-6 text-gray-500">
                       <li>
                         <strong>Cross-Platform Compatibility:</strong> Convert data between formats
                         used by different programming languages and tools.
@@ -91,7 +91,7 @@ export default function DataFormatConverterDocs() {
                     </Button>
                   </div>
 
-                  <div className="md:w-1/3 bg-gray-100 rounded-lg p-5">
+                  <div className="md:w-1/3 rounded-lg p-5">
                     <h3 className="text-lg font-semibold mb-3 flex items-center">
                       <FileDown className="h-5 w-5 mr-2 text-primary" />
                       Quick Facts
@@ -143,7 +143,7 @@ export default function DataFormatConverterDocs() {
                         </p>
                       </div>
                     </div>
-                    <p className="text-gray-700">
+                    <p className="text-gray-500">
                       Seamlessly convert data between JSON, YAML, and XML formats while maintaining
                       the original data structure and integrity.
                     </p>
@@ -159,7 +159,7 @@ export default function DataFormatConverterDocs() {
                         <p className="text-gray-600 text-sm">Pretty print and format data</p>
                       </div>
                     </div>
-                    <p className="text-gray-700">
+                    <p className="text-gray-500">
                       Automatically format your data with consistent indentation, making it more
                       readable and easier to understand.
                     </p>
@@ -175,7 +175,7 @@ export default function DataFormatConverterDocs() {
                         <p className="text-gray-600 text-sm">Upload files for conversion</p>
                       </div>
                     </div>
-                    <p className="text-gray-700">
+                    <p className="text-gray-500">
                       Easily upload files in various formats and convert them directly in the
                       browser without server-side processing.
                     </p>
@@ -191,7 +191,7 @@ export default function DataFormatConverterDocs() {
                         <p className="text-gray-600 text-sm">Export and share converted data</p>
                       </div>
                     </div>
-                    <p className="text-gray-700">
+                    <p className="text-gray-500">
                       Download converted files or copy the transformed data directly to your
                       clipboard for easy sharing.
                     </p>
@@ -200,10 +200,10 @@ export default function DataFormatConverterDocs() {
 
                 <div className="mt-8">
                   <h3 className="text-xl font-semibold mb-4">Detailed Capabilities</h3>
-                  <p className="mb-4 text-gray-700">
+                  <p className="mb-4 text-gray-500">
                     The Data Format Converter provides comprehensive data transformation:
                   </p>
-                  <ul className="list-disc pl-5 space-y-1 text-gray-700">
+                  <ul className="list-disc pl-5 space-y-1 text-gray-500">
                     <li>Preserve original data structure</li>
                     <li>Detect input format automatically</li>
                     <li>Handle nested and complex data structures</li>
@@ -220,7 +220,7 @@ export default function DataFormatConverterDocs() {
             <Card>
               <CardContent className="pt-6">
                 <h2 className="text-2xl font-bold mb-6">Supported Data Formats</h2>
-                <p className="mb-6 text-gray-700">
+                <p className="mb-6 text-gray-500">
                   Choosing the right data format can impact readability, file size, and
                   compatibility. Here's a comparison of the formats supported by our Converter:
                 </p>
@@ -270,23 +270,23 @@ export default function DataFormatConverterDocs() {
                 <div className="grid md:grid-cols-3 gap-6 mt-4">
                   <div className="border rounded-lg p-4">
                     <h4 className="font-semibold text-primary">JSON - Recommended</h4>
-                    <p className="text-sm text-gray-700 mt-2">
+                    <p className="text-sm text-gray-500 mt-2">
                       Ideal for web APIs, configuration files, and data exchange. Lightweight and
                       easily parsed by most programming languages.
                     </p>
                   </div>
 
                   <div className="border rounded-lg p-4">
-                    <h4 className="font-semibold text-gray-700">YAML - For Readability</h4>
-                    <p className="text-sm text-gray-700 mt-2">
+                    <h4 className="font-semibold text-primary">YAML - For Readability</h4>
+                    <p className="text-sm text-gray-500 mt-2">
                       Great for configuration files and human-readable data. Supports comments and
                       more complex data representations.
                     </p>
                   </div>
 
                   <div className="border rounded-lg p-4">
-                    <h4 className="font-semibold text-gray-700">XML - For Complex Systems</h4>
-                    <p className="text-sm text-gray-700 mt-2">
+                    <h4 className="font-semibold text-primary">XML - For Complex Systems</h4>
+                    <p className="text-sm text-gray-500 mt-2">
                       Best for enterprise systems, legacy applications, and scenarios requiring
                       extensive metadata and validation.
                     </p>
@@ -306,8 +306,8 @@ export default function DataFormatConverterDocs() {
 
                 <div className="space-y-6">
                   <div className="border-l-4 border-primary pl-4 py-1">
-                    <h3 className="text-lg font-semibold mb-2">Validate Input Data</h3>
-                    <p className="text-gray-700">
+                    <h3 className="text-lg  font-semibold mb-2">Validate Input Data</h3>
+                    <p className="text-gray-500">
                       Always validate your input data before conversion. Ensure the source data is
                       well-formed and follows the expected structure for the input format.
                     </p>
@@ -315,7 +315,7 @@ export default function DataFormatConverterDocs() {
 
                   <div className="border-l-4 border-primary pl-4 py-1">
                     <h3 className="text-lg font-semibold mb-2">Choose the Right Format</h3>
-                    <p className="text-gray-700">
+                    <p className="text-gray-500">
                       Select the output format based on your target system, readability
                       requirements, and compatibility needs. Consider factors like parsing
                       complexity, human readability, and the destination application's preferences.
@@ -324,7 +324,7 @@ export default function DataFormatConverterDocs() {
 
                   <div className="border-l-4 border-primary pl-4 py-1">
                     <h3 className="text-lg font-semibold mb-2">Handle Large Datasets Carefully</h3>
-                    <p className="text-gray-700">
+                    <p className="text-gray-500">
                       For large datasets, be mindful of memory constraints. Consider breaking down
                       large files into smaller chunks or using streaming conversion methods when
                       possible. Our tool supports files up to 1MB for Server-side conversion.
@@ -333,7 +333,7 @@ export default function DataFormatConverterDocs() {
 
                   <div className="border-l-4 border-primary pl-4 py-1">
                     <h3 className="text-lg font-semibold mb-2">Preserve Data Types</h3>
-                    <p className="text-gray-700">
+                    <p className="text-gray-500">
                       Be aware that some conversions may impact data type precision. For example,
                       converting between formats can sometimes change how numbers or dates are
                       represented. Always verify the converted data maintains its original semantic
@@ -343,7 +343,7 @@ export default function DataFormatConverterDocs() {
 
                   <div className="border-l-4 border-primary pl-4 py-1">
                     <h3 className="text-lg font-semibold mb-2">Remove Sensitive Information</h3>
-                    <p className="text-gray-700">
+                    <p className="text-gray-500">
                       Before converting files, review and remove any sensitive or confidential
                       information. Our tool processes data entirely Server-side, but it's always
                       best to be cautious when handling potentially sensitive data.
@@ -352,16 +352,16 @@ export default function DataFormatConverterDocs() {
 
                   <div className="border-l-4 border-primary pl-4 py-1">
                     <h3 className="text-lg font-semibold mb-2">Use Consistent Formatting</h3>
-                    <p className="text-gray-700">
+                    <p className="text-gray-500">
                       Maintain consistent indentation and formatting across your converted files.
                       This improves readability and makes version control and collaboration easier.
                     </p>
                   </div>
                 </div>
 
-                <div className="bg-gray-100 rounded-lg p-5 mt-8">
+                <div className="bg-secondary rounded-lg p-5 mt-8">
                   <h3 className="text-lg font-semibold mb-3">Recommended File Sizes</h3>
-                  <ul className="space-y-2 text-gray-700">
+                  <ul className="space-y-2 text-gray-500">
                     <li>
                       <strong>Configuration files:</strong> Under 100KB
                     </li>
@@ -386,12 +386,12 @@ export default function DataFormatConverterDocs() {
             <Card>
               <CardContent className="pt-6">
                 <h2 className="text-2xl font-bold mb-6">API Documentation</h2>
-                <p className="mb-6 text-gray-700">
+                <p className="mb-6 text-gray-500">
                   While our current Data Format Converter is a Server-side tool, we provide insights
                   into potential API integration and future developments.
                 </p>
 
-                <div className="bg-gray-100 rounded-lg p-4 mb-6">
+                <div className="rounded-lg p-4 mb-6">
                   <h3 className="text-lg font-semibold mb-2">Potential Future Endpoint</h3>
                   <code className="block bg-gray-800 text-white p-3 rounded">
                     POST /api/data/convert

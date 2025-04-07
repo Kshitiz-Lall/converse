@@ -1,6 +1,6 @@
 // src/utils/converter.ts
 import { DataFormat } from 'constants/converter';
-import { formatApi } from '@/services/api';
+import { formatApi } from '@/services/formatApi';
 
 // Convert between data formats using the API
 export const convertData = async (

@@ -282,11 +282,11 @@ export default function RegexPlaygroundPage() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto p-4 py-8">
         <div className="flex items-center justify-between mb-8">
           <Link
-            to="/"
+            to="/dashboard"
             className="flex items-center text-primary hover:text-primary/80 transition-colors"
           >
             <Home className="h-5 w-5 mr-2" />
@@ -304,7 +304,7 @@ export default function RegexPlaygroundPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Input Section */}
-          <div className="flex flex-col gap-4 bg-white rounded-lg shadow-md p-5">
+          <div className="flex flex-col gap-4 bg-card rounded-lg shadow-md p-5">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold">Pattern</h2>
               <div className="flex gap-2">
@@ -313,7 +313,7 @@ export default function RegexPlaygroundPage() {
                   size="icon"
                   onClick={handleCopyPattern}
                   title="Copy Pattern"
-                  className="hover:bg-green-50"
+                  className="hover:bg-green-100 dark:hover:bg-green-900"
                   disabled={!pattern}
                 >
                   {copied ? (
@@ -327,7 +327,7 @@ export default function RegexPlaygroundPage() {
                   size="icon"
                   onClick={handleClearAll}
                   title="Clear All"
-                  className="hover:bg-red-50"
+                  className="hover:bg-red-100 dark:hover:bg-red-900"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -336,16 +336,16 @@ export default function RegexPlaygroundPage() {
 
             <div className="flex">
               <div className="grow flex items-center">
-                <span className="text-gray-500 mr-1">/</span>
+                <span className="text-muted-foreground mr-1">/</span>
                 <Input
                   placeholder="Enter regex pattern here..."
                   value={pattern}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => setPattern(e.target.value)}
+                  onChange={e => setPattern(e.target.value)}
                   className="font-mono border-none"
                 />
-                <span className="text-gray-500 ml-1">/</span>
+                <span className="text-muted-foreground ml-1">/</span>
               </div>
-              <div className="ml-2 font-mono text-sm bg-gray-100 rounded px-2 py-1">
+              <div className="ml-2 font-mono text-sm bg-muted rounded px-2 py-1">
                 {Object.entries(flags)
                   .filter(([_, isEnabled]) => isEnabled)
                   .map(([flag]) => flag)
@@ -375,14 +375,14 @@ export default function RegexPlaygroundPage() {
             <h2 className="text-xl font-semibold mt-4">Test String</h2>
             <Textarea
               placeholder="Enter text to test your regex against..."
-              className="min-h-[150px] font-mono text-sm bg-gray-50 border"
+              className="min-h-[150px] font-mono text-sm bg-muted border"
               value={testString}
-              onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setTestString(e.target.value)}
+              onChange={e => setTestString(e.target.value)}
             />
           </div>
 
           {/* Results Section */}
-          <div className="flex flex-col gap-4 bg-white rounded-lg shadow-md p-5">
+          <div className="flex flex-col gap-4 bg-card rounded-lg shadow-md p-5">
             <h2 className="text-xl font-semibold">Results</h2>
 
             {error && (
@@ -392,9 +392,9 @@ export default function RegexPlaygroundPage() {
               </Alert>
             )}
 
-            <div className="bg-gray-50 border rounded p-3 min-h-[150px] whitespace-pre-wrap font-mono text-sm overflow-auto">
+            <div className="bg-muted border rounded p-3 min-h-[150px] whitespace-pre-wrap font-mono text-sm overflow-auto">
               {highlightedText || (
-                <span className="text-gray-400">Results will appear here...</span>
+                <span className="text-muted-foreground/70">Results will appear here...</span>
               )}
             </div>
 
@@ -408,7 +408,7 @@ export default function RegexPlaygroundPage() {
             {matches.length > 0 ? (
               <div className="overflow-auto max-h-[200px]">
                 <table className="w-full border-collapse text-sm">
-                  <thead className="bg-gray-100">
+                  <thead className="bg-muted">
                     <tr>
                       <th className="p-2 text-left">#</th>
                       <th className="p-2 text-left">Match</th>
@@ -418,7 +418,7 @@ export default function RegexPlaygroundPage() {
                   </thead>
                   <tbody>
                     {matches.map((match, index) => (
-                      <tr key={index} className="border-b border-gray-200">
+                      <tr key={index} className="border-b border-muted">
                         <td className="p-2">{index + 1}</td>
                         <td className="p-2 font-mono">{match.text}</td>
                         <td className="p-2">{match.index}</td>
@@ -428,7 +428,7 @@ export default function RegexPlaygroundPage() {
                               <ul>
                                 {Object.entries(match.groups).map(([key, value]) => (
                                   <li key={key}>
-                                    <span className="text-blue-600">{key}</span>: {value}
+                                    <span className="text-primary">{key}</span>: {value}
                                   </li>
                                 ))}
                               </ul>
@@ -443,12 +443,12 @@ export default function RegexPlaygroundPage() {
                 </table>
               </div>
             ) : testString && !error ? (
-              <div className="text-gray-500 italic">No matches found</div>
+              <div className="text-muted-foreground italic">No matches found</div>
             ) : null}
           </div>
         </div>
 
-        {/* Examples and Help */}
+        {/* Tabs Section */}
         <Tabs defaultValue="examples" className="mt-8">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="examples">Examples</TabsTrigger>
@@ -471,7 +471,7 @@ export default function RegexPlaygroundPage() {
                     >
                       <div className="text-left">
                         <div className="font-medium">{example.name}</div>
-                        <div className="text-xs font-mono truncate mt-1 text-gray-500">
+                        <div className="text-xs font-mono truncate mt-1 text-muted-foreground">
                           {example.pattern}
                         </div>
                       </div>
@@ -487,6 +487,7 @@ export default function RegexPlaygroundPage() {
               <CardContent className="pt-6">
                 <h3 className="text-lg font-semibold mb-2">{APP_TEXT.about.title}</h3>
                 <p className="mb-4">{APP_TEXT.about.description}</p>
+
                 <h4 className="font-medium mb-2">Features:</h4>
                 <ul className="list-disc pl-5 space-y-1">
                   {APP_TEXT.about.features.map((feature, index) => (
@@ -504,7 +505,7 @@ export default function RegexPlaygroundPage() {
                 <h4 className="font-medium mt-4 mb-2">Regex Tips:</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   {APP_TEXT.help.tips.map((tip, index) => (
-                    <div key={index} className="bg-gray-50 p-2 rounded text-sm">
+                    <div key={index} className="bg-muted p-2 rounded text-sm">
                       {tip}
                     </div>
                   ))}

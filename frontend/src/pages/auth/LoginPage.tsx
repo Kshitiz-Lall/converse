@@ -25,6 +25,7 @@ import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 // Define the form schema using Zod
 const formSchema = z.object({
@@ -40,6 +41,7 @@ type LoginFormValues = z.infer<typeof formSchema>;
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   // Initialize the form
@@ -56,17 +58,52 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginFormValues) => {
     try {
       setIsLoading(true);
+      setError(null);
 
-      // TODO: Implement actual login logic here
-      console.log('Login submitted with:', data);
+      // Actual login API call
+      const response = await fetch('http://localhost:3000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+        }),
+      });
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const result = await response.json();
 
-      // If login successful, navigate to dashboard
+      if (!response.ok) {
+        throw new Error(result.message || 'Login failed');
+      }
+
+      // Successfully logged in
+      console.log('Login successful:', result);
+
+      // Store the token in localStorage or sessionStorage based on "remember me"
+      if (data.rememberMe) {
+        localStorage.setItem('auth_token', result.token);
+      } else {
+        sessionStorage.setItem('auth_token', result.token);
+      }
+
+      // Show success toast
+      toast.success('Login Successful', {
+        description: 'Welcome back! Redirecting to dashboard...',
+      });
+
+      // Navigate to dashboard
       navigate('/dashboard');
     } catch (error) {
       console.error('Login failed:', error);
+      setError(error instanceof Error ? error.message : 'An unexpected error occurred');
+
+      // Show error toast
+      toast.error('Login Failed', {
+        description:
+          error instanceof Error ? error.message : 'Invalid credentials. Please try again.',
+      });
     } finally {
       setIsLoading(false);
     }
@@ -84,6 +121,10 @@ export default function LoginPage() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {error && (
+                <div className="p-3 text-sm bg-red-50 text-red-600 rounded-md mb-4">{error}</div>
+              )}
+
               <FormField
                 control={form.control}
                 name="email"

@@ -1,9 +1,5 @@
 // backend/src/services/historyService.ts
-import fs from "fs/promises";
-import path from "path";
-
-// Define history storage file path
-const HISTORY_FILE = path.join(__dirname, "../../data/request-history.json");
+import RequestHistory, { IRequestHistory } from "./../models/RequestHistory";
 
 // Define history item interface
 export interface RequestHistoryItem {
@@ -18,40 +14,12 @@ export interface RequestHistoryItem {
 }
 
 /**
- * Ensure the history file and directory exist
- */
-const ensureHistoryFile = async (): Promise<void> => {
-  try {
-    // Ensure directory exists
-    const directory = path.dirname(HISTORY_FILE);
-    await fs.mkdir(directory, { recursive: true });
-
-    // Check if file exists
-    try {
-      await fs.access(HISTORY_FILE);
-    } catch (error) {
-      // Create empty history file if it doesn't exist
-      await fs.writeFile(HISTORY_FILE, JSON.stringify([]));
-    }
-  } catch (error) {
-    console.error("Error ensuring history file exists:", error);
-    throw error;
-  }
-};
-
-/**
  * Save a request to history
  */
 export const saveRequestToHistory = async (
   requestData: RequestHistoryItem
 ): Promise<void> => {
   try {
-    await ensureHistoryFile();
-
-    // Read existing history
-    const historyContent = await fs.readFile(HISTORY_FILE, "utf-8");
-    const history: RequestHistoryItem[] = JSON.parse(historyContent || "[]");
-
     // Add unique ID and timestamp
     const newHistoryItem: RequestHistoryItem = {
       ...requestData,
@@ -59,14 +27,25 @@ export const saveRequestToHistory = async (
       timestamp: new Date(),
     };
 
-    // Add to history (at the beginning to show newest first)
-    history.unshift(newHistoryItem);
+    // Save to MongoDB
+    await RequestHistory.create(newHistoryItem);
 
-    // Limit history size to 100 items
-    const limitedHistory = history.slice(0, 100);
+    // Optional: Limit history size to 100 items by removing oldest entries
+    const historyCount = await RequestHistory.countDocuments();
+    if (historyCount > 100) {
+      // Find the oldest entries to remove
+      const excessCount = historyCount - 100;
+      const oldestEntries = await RequestHistory.find({})
+        .sort({ timestamp: 1 })
+        .limit(excessCount);
 
-    // Write updated history back to file
-    await fs.writeFile(HISTORY_FILE, JSON.stringify(limitedHistory, null, 2));
+      if (oldestEntries.length > 0) {
+        const oldestIds = oldestEntries.map(
+          (entry: IRequestHistory) => entry.id
+        );
+        await RequestHistory.deleteMany({ id: { $in: oldestIds } });
+      }
+    }
   } catch (error) {
     console.error("Error saving request to history:", error);
     throw error;
@@ -81,18 +60,19 @@ export const getRequestHistoryItems = async (
   offset = 0
 ): Promise<{ items: RequestHistoryItem[]; total: number }> => {
   try {
-    await ensureHistoryFile();
+    // Get total count
+    const total = await RequestHistory.countDocuments();
 
-    // Read history file
-    const historyContent = await fs.readFile(HISTORY_FILE, "utf-8");
-    const history: RequestHistoryItem[] = JSON.parse(historyContent || "[]");
-
-    // Paginate the results
-    const paginatedHistory = history.slice(offset, offset + limit);
+    // Get paginated data
+    const items = await RequestHistory.find({})
+      .sort({ timestamp: -1 }) // Newest first
+      .skip(offset)
+      .limit(limit)
+      .lean();
 
     return {
-      items: paginatedHistory,
-      total: history.length,
+      items: items as RequestHistoryItem[],
+      total,
     };
   } catch (error) {
     console.error("Error getting request history:", error);
@@ -105,8 +85,7 @@ export const getRequestHistoryItems = async (
  */
 export const clearHistory = async (): Promise<void> => {
   try {
-    await ensureHistoryFile();
-    await fs.writeFile(HISTORY_FILE, JSON.stringify([]));
+    await RequestHistory.deleteMany({});
   } catch (error) {
     console.error("Error clearing request history:", error);
     throw error;

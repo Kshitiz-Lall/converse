@@ -22,7 +22,7 @@ import {
   deleteCollection,
   exportCollection,
   getCollections,
-} from '@/services/apiTesterService';
+} from '@/services/testServiceApi';
 import { Collection } from '@/types/apiTester';
 import {
   ChevronDown,

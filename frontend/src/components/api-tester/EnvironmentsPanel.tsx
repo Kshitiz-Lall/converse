@@ -22,7 +22,7 @@ import {
   getEnvironments,
   setActiveEnvironment,
   updateEnvironment,
-} from '@/services/apiTesterService';
+} from '@/services/testServiceApi';
 import { Environment } from '@/types/apiTester';
 import { ArrowRight, Edit, MoreHorizontal, Plus, Settings, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';

@@ -1,38 +1,22 @@
-// frontend/src/pages/ApiRequestTesterPage.tsx
-import { useState, useEffect } from 'react';
+import { apiCollections, apiEnvironments } from '@/services/ApiTesting';
+import { resolveEnvVariables } from '@/lib/resolveEnv';
+import { clearHistory, executeRequest, getHistory } from '@/services/testServiceApi';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import {
-  Home,
-  ArrowRight,
-  Send,
-  Download,
-  Save,
-  History,
-  Folder,
-  Settings,
-  Play,
-  PauseCircle,
-  Clock,
-  RefreshCw,
-} from 'lucide-react';
 
-// Import components
-import RequestForm from '@/components/api-tester/RequestForm';
-import ResponseViewer from '@/components/api-tester/ResponseViewer';
-import HistoryPanel from '@/components/api-tester/HistoryPanel';
+import { ApiRequest, ApiResponse, Collection, Environment, HistoryItem } from '@/types/apiTester';
+
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ArrowRight, Folder, History, Home, RefreshCw, Send, Settings } from 'lucide-react';
+
 import CollectionsPanel from '@/components/api-tester/CollectionsPanel';
 import EnvironmentsPanel from '@/components/api-tester/EnvironmentsPanel';
-
-// Types
-import { ApiRequest, ApiResponse, HistoryItem, Collection, Environment } from '@/types/apiTester';
-
-// API Services
-import { executeRequest, getHistory, clearHistory } from '@/services/apiTesterService';
+import HistoryPanel from '@/components/api-tester/HistoryPanel';
+import RequestForm from '@/components/api-tester/RequestForm';
+import ResponseViewer from '@/components/api-tester/ResponseViewer';
 
 export default function ApiRequestTesterPage() {
-  // Main states
   const [request, setRequest] = useState<ApiRequest>({
     url: '',
     method: 'GET',
@@ -41,74 +25,80 @@ export default function ApiRequestTesterPage() {
     body: null,
   });
   const [response, setResponse] = useState<ApiResponse | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Sidebar states
-  const [activeTab, setActiveTab] = useState<string>('request');
-  const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [activeTab, setActiveTab] = useState('request');
+
   const [collections, setCollections] = useState<Collection[]>([]);
   const [environments, setEnvironments] = useState<Environment[]>([]);
   const [activeEnvironment, setActiveEnvironment] = useState<Environment | null>(null);
+  const [history, setHistory] = useState<HistoryItem[]>([]);
 
-  // Load history on mount
   useEffect(() => {
-    fetchHistory();
+    loadInitialData();
   }, []);
 
-  // Execute API request
+  const loadInitialData = async () => {
+    try {
+      const [coll, envs, active, hist] = await Promise.all([
+        apiCollections.getAll(),
+        apiEnvironments.getAll(),
+        apiEnvironments.getActive(),
+        getHistory(),
+      ]);
+      setCollections(coll.data);
+      setEnvironments(envs.data);
+      setActiveEnvironment(active.data);
+      setHistory(hist);
+    } catch (err) {
+      console.error('Failed to load data:', err);
+    }
+  };
+
   const handleExecuteRequest = async () => {
     setIsLoading(true);
     setError(null);
     setResponse(null);
 
     try {
-      const result = await executeRequest(request);
+      const resolvedRequest = {
+        ...request,
+        url: resolveEnvVariables(request.url, activeEnvironment?.variables || {}),
+      };
+
+      const result = await executeRequest(resolvedRequest);
       setResponse(result);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred during request execution');
+      setActiveTab('response');
+      const updatedHistory = await getHistory();
+      setHistory(updatedHistory);
+    } catch (err: any) {
+      setError(err.message || 'Request failed');
     } finally {
       setIsLoading(false);
-      // Refresh history after request
-      fetchHistory();
     }
   };
 
-  // Fetch history
-  const fetchHistory = async () => {
-    try {
-      const historyItems = await getHistory();
-      setHistory(historyItems);
-    } catch (error) {
-      console.error('Failed to fetch history:', error);
-    }
-  };
-
-  // Clear history
   const handleClearHistory = async () => {
     try {
       await clearHistory();
       setHistory([]);
     } catch (error) {
-      console.error('Failed to clear history:', error);
+      console.error('Error clearing history:', error);
     }
   };
 
-  // Load request from history
-  const loadFromHistory = (historyItem: HistoryItem) => {
+  const loadFromHistory = (item: HistoryItem) => {
     setRequest({
-      url: historyItem.url,
-      method: historyItem.method,
-      headers: historyItem.headers || {},
-      params: historyItem.params || {},
-      body: historyItem.body || null,
+      url: item.url,
+      method: item.method,
+      headers: item.headers || {},
+      params: item.params || {},
+      body: item.body || null,
     });
-
-    // Switch to request tab
     setActiveTab('request');
   };
 
-  // Reset request
   const resetRequest = () => {
     setRequest({
       url: '',
@@ -122,59 +112,44 @@ export default function ApiRequestTesterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <div className="container mx-auto p-4 py-8">
         <div className="flex items-center justify-between mb-4">
-          <Link
-            to="/"
-            className="flex items-center text-primary hover:text-primary/80 transition-colors"
-          >
+          <Link to="/dashboard" className="flex items-center text-primary">
             <Home className="h-5 w-5 mr-2" />
             <span>Back to Dashboard</span>
           </Link>
           <h1 className="text-3xl font-bold text-center">API Request Tester</h1>
-          <Link
-            to="/api-tester/docs"
-            className="flex items-center text-primary hover:text-primary/80 transition-colors"
-          >
+          <Link to="/api-tester/docs" className="flex items-center text-primary">
             <span>Documentation</span>
             <ArrowRight className="h-5 w-5 ml-2" />
           </Link>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* Main content area */}
+          {/* Main Panel */}
           <div className="flex-1">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsList className="grid grid-cols-2">
                 <TabsTrigger value="request">Request</TabsTrigger>
                 <TabsTrigger value="response">Response</TabsTrigger>
               </TabsList>
 
-              <TabsContent value="request" className="p-0">
-                <div className="bg-white rounded-lg shadow-md p-5">
+              <TabsContent value="request">
+                <div className="bg-white rounded-lg shadow p-5">
                   <div className="flex justify-between items-center mb-4">
                     <h2 className="text-xl font-semibold">Request</h2>
                     <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={resetRequest}
-                        disabled={isLoading}
-                      >
+                      <Button variant="outline" onClick={resetRequest} disabled={isLoading}>
                         <RefreshCw className="h-4 w-4 mr-2" />
                         Reset
                       </Button>
-                      <Button
-                        onClick={handleExecuteRequest}
-                        disabled={isLoading || !request.url}
-                        className="bg-primary"
-                      >
+                      <Button onClick={handleExecuteRequest} disabled={!request.url || isLoading}>
                         {isLoading ? (
-                          <>
-                            <div className="animate-spin h-4 w-4 mr-2 border-2 border-white border-t-transparent rounded-full"></div>
+                          <div className="flex items-center">
+                            <div className="animate-spin h-4 w-4 mr-2 border-2 border-white border-t-transparent rounded-full" />
                             Sending...
-                          </>
+                          </div>
                         ) : (
                           <>
                             <Send className="h-4 w-4 mr-2" />
@@ -184,40 +159,12 @@ export default function ApiRequestTesterPage() {
                       </Button>
                     </div>
                   </div>
-
                   <RequestForm request={request} setRequest={setRequest} isLoading={isLoading} />
                 </div>
               </TabsContent>
 
-              <TabsContent value="response" className="p-0">
-                <div className="bg-white rounded-lg shadow-md p-5 min-h-[600px]">
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-semibold">Response</h2>
-                    {response && (
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            /* TODO: Copy response */
-                          }}
-                        >
-                          Copy
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            /* TODO: Save response */
-                          }}
-                        >
-                          <Save className="h-4 w-4 mr-2" />
-                          Save
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-
+              <TabsContent value="response">
+                <div className="bg-white rounded-lg shadow p-5 min-h-[500px]">
                   <ResponseViewer response={response} error={error} isLoading={isLoading} />
                 </div>
               </TabsContent>
@@ -225,24 +172,24 @@ export default function ApiRequestTesterPage() {
           </div>
 
           {/* Sidebar */}
-          <div className="w-full lg:w-80 bg-white rounded-lg shadow-md">
+          <div className="w-full lg:w-80 bg-white rounded-lg shadow">
             <Tabs defaultValue="history" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid grid-cols-3">
                 <TabsTrigger value="history">
-                  <History className="h-4 w-4 mr-2" />
+                  <History className="h-4 w-4 mr-1" />
                   History
                 </TabsTrigger>
                 <TabsTrigger value="collections">
-                  <Folder className="h-4 w-4 mr-2" />
+                  <Folder className="h-4 w-4 mr-1" />
                   Collections
                 </TabsTrigger>
                 <TabsTrigger value="environments">
-                  <Settings className="h-4 w-4 mr-2" />
+                  <Settings className="h-4 w-4 mr-1" />
                   Env
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="history" className="p-0">
+              <TabsContent value="history">
                 <HistoryPanel
                   history={history}
                   onLoadRequest={loadFromHistory}
@@ -250,11 +197,11 @@ export default function ApiRequestTesterPage() {
                 />
               </TabsContent>
 
-              <TabsContent value="collections" className="p-0">
+              <TabsContent value="collections">
                 <CollectionsPanel collections={collections} onLoadRequest={loadFromHistory} />
               </TabsContent>
 
-              <TabsContent value="environments" className="p-0">
+              <TabsContent value="environments">
                 <EnvironmentsPanel
                   environments={environments}
                   activeEnvironment={activeEnvironment}
