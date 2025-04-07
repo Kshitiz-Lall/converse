@@ -42,8 +42,13 @@ import IssuePRSummaryGenerator from '@/pages/IssuePRSummaryGenerator';
 import Profile from '@/pages/ProfilePage';
 import { UUIDGenerator } from '@/pages/UUIDGenerator';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
+import LLMCarbonFootprint from '@/pages/llm-calculation/LLMCarbonFootprint';
+import LLMCostCalculator from '@/pages/llm-calculation/LLMCostCalculator';
 import { LLMDashboard } from '@/pages/llm-calculation/LLMDashboard';
 import { LLMLeaderboard } from '@/pages/llm-calculation/LLMLeaderboard';
+import LLMModelComparison from '@/pages/llm-calculation/LLMModelComparison';
+import LLMParameterEstimator from '@/pages/llm-calculation/LLMParameterEstimator';
+import LLMPromptEngineering from '@/pages/llm-calculation/LLMPromptEngineering';
 
 // Loading component for suspense fallback
 const Loader = () => (
@@ -546,6 +551,56 @@ export const routes: RouteObject[] = [
           <RequireAuth>
             <Suspense fallback={<Loader />}>
               <LLMLeaderboard />
+            </Suspense>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: '/llm-suites/llm-cost-calculator',
+        element: (
+          <RequireAuth>
+            <Suspense fallback={<Loader />}>
+              <LLMCostCalculator />
+            </Suspense>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: '/llm-suites/llm-parameter-estimator',
+        element: (
+          <RequireAuth>
+            <Suspense fallback={<Loader />}>
+              <LLMParameterEstimator />
+            </Suspense>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: '/llm-suites/llm-carbon-footprint',
+        element: (
+          <RequireAuth>
+            <Suspense fallback={<Loader />}>
+              <LLMCarbonFootprint />
+            </Suspense>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: '/llm-suites/llm-model-comparison',
+        element: (
+          <RequireAuth>
+            <Suspense fallback={<Loader />}>
+              <LLMModelComparison />
+            </Suspense>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: '/llm-suites/llm-prompt-engineering',
+        element: (
+          <RequireAuth>
+            <Suspense fallback={<Loader />}>
+              <LLMPromptEngineering />
             </Suspense>
           </RequireAuth>
         ),

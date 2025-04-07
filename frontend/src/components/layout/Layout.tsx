@@ -97,25 +97,6 @@ function NavMenu() {
     <nav className="flex w-full justify-between items-center">
       {/* LEFT SIDE NAVIGATION */}
       <ul className="flex items-center space-x-1">
-        {/* {!token && <NavItem title="Home" to="/" active={location.pathname === '/'} />}
-
-        {toolCategories.map(category => (
-          <DropdownMenu key={category.category} trigger={<span>{category.category}</span>}>
-            {category.tools.map(tool => (
-              <NavItem
-                key={tool.id}
-                title={tool.title}
-                to={tool.available ? tool.path : '#'}
-                icon={tool.icon}
-                disabled={!tool.available}
-              >
-                {!tool.available && (
-                  <span className="ml-auto text-xs text-muted-foreground">Coming Soon</span>
-                )}
-              </NavItem>
-            ))}
-          </DropdownMenu>
-        ))} */}
       </ul>
 
       {/* RIGHT SIDE - AUTH/PROFILE SECTION */}
@@ -145,7 +126,7 @@ function NavMenu() {
             />
             <NavItem
               title="Logout"
-              to="#"
+              to="/logout"
               icon={<LogOut className="h-4 w-4" />}
               onClick={handleLogout}
             />
