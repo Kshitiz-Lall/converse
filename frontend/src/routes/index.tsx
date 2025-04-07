@@ -40,8 +40,10 @@ import AIDebuggerPage from '@/pages/AIDebuggerPage';
 import CronExpressionBuilder from '@/pages/CronExpressionBuilder';
 import IssuePRSummaryGenerator from '@/pages/IssuePRSummaryGenerator';
 import Profile from '@/pages/ProfilePage';
-import AdminDashboard from '@/pages/admin/AdminDashboard';
 import { UUIDGenerator } from '@/pages/UUIDGenerator';
+import AdminDashboard from '@/pages/admin/AdminDashboard';
+import { LLMDashboard } from '@/pages/llm-calculation/LLMDashboard';
+import { LLMLeaderboard } from '@/pages/llm-calculation/LLMLeaderboard';
 
 // Loading component for suspense fallback
 const Loader = () => (
@@ -253,6 +255,20 @@ export const toolCategories = [
         icon: <FileText className="h-10 w-10 mr-2" />,
         path: '/stack-overflow-search',
         available: false,
+      },
+    ],
+  },
+  {
+    category: 'AI-Tools',
+    tools: [
+      {
+        id: 'llm-calculation',
+        title: 'LLM Calculator',
+        description:
+          'Leverage large language models to analyze code, detect logical and syntax errors, and receive intelligent suggestions for debugging and optimization.',
+        icon: <FileCog className="h-10 w-10 mr-2" />,
+        path: '/llm-suites',
+        available: true,
       },
     ],
   },
@@ -508,6 +524,28 @@ export const routes: RouteObject[] = [
           <RequireAuth>
             <Suspense fallback={<Loader />}>
               <AdminDashboard />
+            </Suspense>
+          </RequireAuth>
+        ),
+      },
+
+      // LLM Models
+      {
+        path: '/llm-suites',
+        element: (
+          <RequireAuth>
+            <Suspense fallback={<Loader />}>
+              <LLMDashboard />
+            </Suspense>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: '/llm-suites/llm-leaderboard',
+        element: (
+          <RequireAuth>
+            <Suspense fallback={<Loader />}>
+              <LLMLeaderboard />
             </Suspense>
           </RequireAuth>
         ),

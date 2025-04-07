@@ -1,8 +1,7 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Zap, Globe, CheckCircle, Cpu, Users, Settings } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Cpu, Settings, Users, Zap } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const landingPageContent = {
   intro: 'DevToolkit',
@@ -50,14 +49,16 @@ const landingPageContent = {
 };
 
 const LandingPage = () => (
-  <div className="min-h-screen font-tertiary">
+  <div className="min-h-screen font-tertiary bg-background text-foreground">
     {/* Hero Section */}
     <div className="container mx-auto px-6 py-24 text-center">
       <h1 className="text-6xl font-secondary text-primary font-extrabold mb-4">
         {landingPageContent.intro}
       </h1>
-      <h1 className="text-2xl font-tertiary  font-bold mb-4">{landingPageContent.subtitle}</h1>
-      <p className="text-xl text-gray-600 max-w-3xl mx-auto">{landingPageContent.description}</p>
+      <h1 className="text-2xl font-tertiary font-bold mb-4">{landingPageContent.subtitle}</h1>
+      <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+        {landingPageContent.description}
+      </p>
       <div className="flex justify-center gap-4 mt-8">
         <Button asChild size="lg">
           <Link to="/signup">Get Started</Link>
@@ -72,7 +73,9 @@ const LandingPage = () => (
     <div className="py-16">
       <div className="container mx-auto px-6 text-center">
         <h2 className="text-4xl font-secondary mb-6">📖 Our Story</h2>
-        <p className="text-lg text-gray-700 max-w-4xl mx-auto">{landingPageContent.story}</p>
+        <p className="text-lg text-gray-700 dark:text-gray-200 max-w-4xl mx-auto">
+          {landingPageContent.story}
+        </p>
       </div>
     </div>
 
@@ -92,7 +95,7 @@ const LandingPage = () => (
                 <CardTitle className="text-xl font-tertiary mt-4 text-center">{title}</CardTitle>
               </CardHeader>
               <CardContent className="text-center">
-                <ul className="text-gray-600">
+                <ul className="text-gray-600 dark:text-gray-300">
                   {items.map(item => (
                     <li key={item} className="my-1">
                       {item}
@@ -110,12 +113,14 @@ const LandingPage = () => (
     <div className="py-16 text-center">
       <div className="container mx-auto px-6">
         <h2 className="text-4xl font-secondary mb-6">Modular and Scalable</h2>
-        <p className="text-lg text-gray-700 max-w-4xl mx-auto">{landingPageContent.modular}</p>
+        <p className="text-lg text-gray-700 dark:text-gray-200 max-w-4xl mx-auto">
+          {landingPageContent.modular}
+        </p>
       </div>
     </div>
 
     {/* CTA Section */}
-    <div className="bg-primary text-white py-16 text-center">
+    <div className="bg-primary text-primary-foreground py-16 text-center">
       <h2 className="text-4xl font-secondary mb-4">Start Your Journey with DevToolkit Today!</h2>
       <p className="text-xl mb-6">{landingPageContent.cta}</p>
       <Button asChild size="lg" variant="secondary">

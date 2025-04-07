@@ -1,15 +1,8 @@
-import { useState, useEffect } from 'react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Textarea } from '@/components/ui/textarea';
-import { Copy, Loader2, Bug, Sparkles, Code, Terminal } from 'lucide-react';
-import axios from 'axios';
-import { toast } from 'sonner';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
 import {
   Select,
   SelectContent,
@@ -17,18 +10,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Slider } from '@/components/ui/slider';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
+import axios from 'axios';
+import { Bug, Code, Copy, Loader2, Sparkles, Terminal } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 // Constants for Labels, Languages, Analysis Types, and Icons
 const LANGUAGES = [
-  'javascript', 'typescript', 'python', 'java', 'csharp', 'php', 'ruby', 'go', 'rust', 'cpp'
+  'javascript',
+  'typescript',
+  'python',
+  'java',
+  'csharp',
+  'php',
+  'ruby',
+  'go',
+  'rust',
+  'cpp',
 ];
 
 const ANALYSIS_TYPES = [
   { value: 'error', label: 'Error Debugging' },
   { value: 'static', label: 'Static Analysis' },
-  { value: 'performance', label: 'Performance Check' }
+  { value: 'performance', label: 'Performance Check' },
 ];
 
 const ICONS = {
@@ -37,7 +45,7 @@ const ICONS = {
   loader: <Loader2 className="animate-spin h-4 w-4 mr-2" />,
   terminal: <Terminal className="h-5 w-5" />,
   code: <Code className="h-5 w-5" />,
-  copy: <Copy className="h-4 w-4 mr-2" />
+  copy: <Copy className="h-4 w-4 mr-2" />,
 };
 
 // Component
