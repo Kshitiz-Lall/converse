@@ -3,6 +3,8 @@ node_modules/
 
 # Build
 dist/
+# AppMap Data
+tmp/
 
 # Logs
 logs/
