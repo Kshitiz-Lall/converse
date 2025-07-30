@@ -10,6 +10,7 @@ const DataFormatPage = lazy(() => import('@/pages/DataFormatPage'));
 const ImageOptimizerPage = lazy(() => import('@/pages/ImageOptimizerPage'));
 const RegexPlaygroundPage = lazy(() => import('@/pages/RegexPlaygroundPage'));
 const ApiRequestTesterPage = lazy(() => import('@/pages/ApiRequestTesterPage'));
+const JWTToolPage = lazy(() => import('@/pages/JWTToolPage'));
 
 // Exception pages
 const NotFound = lazy(() => import('@/pages/exceptions/NotFound'));
@@ -86,7 +87,7 @@ export const toolCategories = [
         description: 'Inspect, verify, and create JWT tokens',
         icon: <FileJson className="h-10 w-10 mr-2" />,
         path: '/jwt-tool',
-        available: false,
+        available: true,
       },
       {
         id: 'hash-generator',
@@ -156,7 +157,7 @@ export const toolCategories = [
         description: 'Inspect, verify, and create JWT tokens',
         icon: <FileJson className="h-10 w-10 mr-2" />,
         path: '/jwt-tool',
-        available: false,
+        available: true,
       },
       {
         id: 'hash-generator',
@@ -388,6 +389,16 @@ export const routes: RouteObject[] = [
           <RequireAuth>
             <Suspense fallback={<Loader />}>
               <UUIDGenerator />
+            </Suspense>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: '/jwt-tool',
+        element: (
+          <RequireAuth>
+            <Suspense fallback={<Loader />}>
+              <JWTToolPage />
             </Suspense>
           </RequireAuth>
         ),
