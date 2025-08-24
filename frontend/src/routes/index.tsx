@@ -11,6 +11,7 @@ const ImageOptimizerPage = lazy(() => import('@/pages/ImageOptimizerPage'));
 const RegexPlaygroundPage = lazy(() => import('@/pages/RegexPlaygroundPage'));
 const ApiRequestTesterPage = lazy(() => import('@/pages/ApiRequestTesterPage'));
 const JWTToolPage = lazy(() => import('@/pages/JWTToolPage'));
+const HashGeneratorPage = lazy(() => import('@/pages/HashGeneratorPage'));
 
 // Exception pages
 const NotFound = lazy(() => import('@/pages/exceptions/NotFound'));
@@ -95,7 +96,7 @@ export const toolCategories = [
         description: 'Create MD5, SHA1, and SHA256 hashes',
         icon: <Zap className="h-10 w-10 mr-2" />,
         path: '/hash-generator',
-        available: false,
+        available: true,
       },
     ],
   },
@@ -165,7 +166,7 @@ export const toolCategories = [
         description: 'Create MD5, SHA1, and SHA256 hashes',
         icon: <Zap className="h-10 w-10 mr-2" />,
         path: '/hash-generator',
-        available: false,
+        available: true,
       },
     ],
   },
@@ -399,6 +400,16 @@ export const routes: RouteObject[] = [
           <RequireAuth>
             <Suspense fallback={<Loader />}>
               <JWTToolPage />
+            </Suspense>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: '/hash-generator',
+        element: (
+          <RequireAuth>
+            <Suspense fallback={<Loader />}>
+              <HashGeneratorPage />
             </Suspense>
           </RequireAuth>
         ),
