@@ -1,4 +1,4 @@
-import sharp, { OutputInfo, Sharp } from "sharp";
+import sharp, { Sharp } from "sharp";
 import {
   ImageFormat,
   ImageProcessingOptions,

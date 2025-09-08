@@ -1,5 +1,5 @@
 import CollectionModel from "../models/Collection";
-import { ICollection, IRequestItem } from "../models/Collection"; // Import the interfaces from your model
+import { IRequestItem } from "../models/Collection"; // Import the interfaces from your model
 
 // Define plain object interfaces for service layer (without Document properties)
 export interface RequestItem {
@@ -48,10 +48,7 @@ interface PostmanRequest {
   };
 }
 
-interface InsomniaParam {
-  name: string;
-  value: string;
-}
+
 
 /**
  * Get all collections
@@ -345,7 +342,7 @@ const importPostmanCollection = async (
         if (item.request.body.mode === "raw" && item.request.body.raw) {
           try {
             request.body = JSON.parse(item.request.body.raw);
-          } catch (e) {
+          } catch {
             request.body = item.request.body.raw;
           }
         } else if (
@@ -413,7 +410,7 @@ const importInsomniaCollection = async (
       if (item.body.text) {
         try {
           request.body = JSON.parse(item.body.text);
-        } catch (e) {
+        } catch {
           request.body = item.body.text;
         }
       } else if (item.body.params && Array.isArray(item.body.params)) {

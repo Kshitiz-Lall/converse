@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Cpu, Settings, Users, Zap } from 'lucide-react';
+import { Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const landingPageContent = {
@@ -16,31 +16,11 @@ const landingPageContent = {
       title: 'Developer Tools',
       items: [
         'Data Format Converter',
-        'Image Optimizer',
         'Regex Playground',
         'Cron Expression Builder',
-        'API Request Tester',
+        'JWT Encoder/Decoder',
+        'UUID Generator',
       ],
-    },
-    {
-      icon: Cpu,
-      title: 'AI-Powered Features',
-      items: [
-        'AI Debugger',
-        'AI Test Case Generator',
-        'Automated Code Refactoring',
-        'AI-Based Stack Overflow Search',
-      ],
-    },
-    {
-      icon: Users,
-      title: 'Project & Collaboration Tools',
-      items: ['Issue & PR Summary Generator', 'Documentation Auto-Generator'],
-    },
-    {
-      icon: Settings,
-      title: 'DevOps & Automation Tools',
-      items: ['Dockerfile Generator & Optimizer', 'CI/CD Config Generator', 'Server Log Analyzer'],
     },
   ],
   modular:

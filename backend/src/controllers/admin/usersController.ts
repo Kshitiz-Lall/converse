@@ -130,7 +130,7 @@ export const adminDeleteUser = async (req: AdminRequest, res: Response) => {
     }
 
     // Soft delete option
-    const updatedUser = await User.findByIdAndUpdate(
+    await User.findByIdAndUpdate(
       id,
       {
         accountStatus: "deleted",

@@ -47,7 +47,7 @@ export const encodeJWT = (req: Request, res: Response): void => {
   let parsedPayload;
   try {
     parsedPayload = typeof payload === 'string' ? JSON.parse(payload) : payload;
-  } catch (error) {
+  } catch {
     responseUtils.errorResponse(res, "Payload must be valid JSON");
     return;
   }

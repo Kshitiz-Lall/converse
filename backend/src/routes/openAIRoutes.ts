@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { summarizeUrl } from '../controllers/openAIController';
-import authMiddleware from '../middleware/authMiddleware';
+
 
 const router = Router();
 

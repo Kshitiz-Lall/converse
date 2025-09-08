@@ -31,7 +31,7 @@ export const validateRequest = (data: ApiRequestBody): ValidationResult => {
   // Validate URL format
   try {
     new URL(data.url);
-  } catch (error) {
+  } catch {
     return { isValid: false, error: "Invalid URL format" };
   }
 
@@ -77,7 +77,7 @@ export const determineContentType = (body: any): string => {
     try {
       JSON.parse(body);
       return 'application/json';
-    } catch (e) {
+    } catch {
       // Check if it looks like XML
       if (body.trim().startsWith('<') && body.trim().endsWith('>')) {
         return 'application/xml';

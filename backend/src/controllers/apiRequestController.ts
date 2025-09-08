@@ -67,16 +67,9 @@ export const executeRequest = async (
   } catch (error) {
     let errorMsg = "Failed to execute request";
     let statusCode = 500;
-    let errorData = null;
     if (axios.isAxiosError(error)) {
       errorMsg = error.message;
       statusCode = error.response?.status || 500;
-      errorData = {
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        data: error.response?.data,
-        headers: error.response?.headers,
-      };
     } else if (error instanceof Error) {
       errorMsg = error.message;
     }

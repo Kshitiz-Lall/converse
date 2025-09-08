@@ -239,7 +239,7 @@ export const processRequestWithEnvironment = async (
     const processedBodyStr = await processEnvironmentVariables(bodyStr);
     try {
       processed.body = JSON.parse(processedBodyStr);
-    } catch (e) {
+    } catch {
       // If parsing fails, keep the processed string
       processed.body = processedBodyStr;
     }
