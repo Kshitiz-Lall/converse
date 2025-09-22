@@ -1,0 +1,46 @@
+# Render Blueprint for DevToolkit
+# This file configures deployment on Render.com
+
+services:
+  # Backend API Service
+  - type: web
+    name: devtoolkit-backend
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: MONGODB_URI
+        fromDatabase:
+          name: devtoolkit-mongo
+          property: connectionString
+      - key: FRONTEND_URL
+        fromService:
+          type: web
+          name: devtoolkit-frontend
+          property: host
+
+  # Frontend Web Service
+  - type: web
+    name: devtoolkit-frontend
+    env: static
+    plan: free
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: devtoolkit-backend
+          property: host
+
+databases:
+  # MongoDB Database
+  - name: devtoolkit-mongo
+    plan: free
