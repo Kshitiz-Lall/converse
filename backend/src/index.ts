@@ -12,7 +12,6 @@ import connectDB from "./config/connection";
 import { corsMiddleware } from "./middleware/corsMiddleware";
 import errorHandler from "./middleware/errorHandler";
 import routes from "./routes";
-import adminRouter from "./routes/admin";
 
 const app: Express = express();
 const PORT: number = parseInt(process.env.PORT || "3000", 10);
@@ -37,9 +36,6 @@ const initializeServer = async () => {
 
     // Routes
     app.use("/api", routes);
-
-    // Admin Routes
-    app.use("/api/admin", adminRouter);
 
     // Health check endpoint
     app.get("/health", (req, res) => {

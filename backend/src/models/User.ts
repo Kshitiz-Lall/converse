@@ -6,12 +6,6 @@ export interface IUser extends Document {
   password: string;
   phone?: string;
   address?: string;
-  paymentDetails?: {
-    cardNumber: string;
-    expiryDate: string;
-    cvv: string;
-  };
-  // Add these new fields
   profilePicture?: string;
   dateOfBirth?: Date;
   gender?: 'male' | 'female' | 'other';
@@ -27,10 +21,7 @@ export interface IUser extends Document {
   };
   isVerified?: boolean;
   verificationToken?: string;
-  role?: 'user' | 'admin' | 'moderator';
   lastLogin?: Date;
-  loginAttempts?: number;
-  accountStatus?: 'active' | 'suspended' | 'deleted';
   createdAt: Date;
   updatedAt: Date;
 }
@@ -42,12 +33,6 @@ const UserSchema: Schema = new Schema(
     password: { type: String, required: true },
     phone: { type: String },
     address: { type: String },
-    paymentDetails: {
-      cardNumber: { type: String, default: null },
-      expiryDate: { type: String, default: null },
-      cvv: { type: String, default: null },
-    },
-    // Add corresponding schema fields
     profilePicture: {
       type: String,
       validate: {
@@ -72,10 +57,7 @@ const UserSchema: Schema = new Schema(
     },
     isVerified: { type: Boolean, default: false },
     verificationToken: { type: String },
-    role: { type: String, enum: ['user', 'admin', 'moderator'], default: 'user' },
-    lastLogin: { type: Date },
-    loginAttempts: { type: Number, default: 0 },
-    accountStatus: { type: String, enum: ['active', 'suspended', 'deleted'], default: 'active' }
+    lastLogin: { type: Date }
   },
   { timestamps: true }
 );
