@@ -34,7 +34,6 @@ import DocumentationPage from '@/pages/DocumentationPage';
 import CronExpressionBuilder from '@/pages/CronExpressionBuilder';
 import Profile from '@/pages/ProfilePage';
 import { UUIDGenerator } from '@/pages/UUIDGenerator';
-import AdminDashboard from '@/pages/admin/AdminDashboard';
 
 // Loading component for suspense fallback
 const Loader = () => (
@@ -264,16 +263,6 @@ export const routes: RouteObject[] = [
           <RequireAuth>
             <Suspense fallback={<Loader />}>
               <Profile />
-            </Suspense>
-          </RequireAuth>
-        ),
-      },
-      {
-        path: '/admin-panel',
-        element: (
-          <RequireAuth>
-            <Suspense fallback={<Loader />}>
-              <AdminDashboard />
             </Suspense>
           </RequireAuth>
         ),

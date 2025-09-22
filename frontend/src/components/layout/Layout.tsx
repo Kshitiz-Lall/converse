@@ -1,6 +1,5 @@
 import { cn } from '@/lib/utils';
-import { toolCategories } from '@/routes/index';
-import { LogOut, Settings, User } from 'lucide-react';
+import { LogOut, User } from 'lucide-react';
 import * as React from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { DropdownMenu, useDropdown } from '../custom/DropdownMenu';
@@ -136,12 +135,6 @@ function NavMenu() {
               to="/profile"
               icon={<User className="h-4 w-4" />}
               active={location.pathname === '/profile'}
-            />
-            <NavItem
-              title="Admin"
-              to="/admin-panel"
-              icon={<Settings className="h-4 w-4" />}
-              active={location.pathname === '/admin-panel'}
             />
             <NavItem
               title="Logout"

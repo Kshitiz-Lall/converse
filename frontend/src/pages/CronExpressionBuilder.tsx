@@ -5,10 +5,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { Check, ChevronsUpDown, Clock, Copy, X } from 'lucide-react';
+import { Check, ChevronsUpDown, Clock, Copy, X, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { parseNaturalLanguageCron } from '../services/cronApi';
 
 type TimeUnit = 'minute' | 'hour' | 'day' | 'month' | 'weekday';
 type Preset = 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'custom';
@@ -59,6 +61,9 @@ export default function CronExpressionBuilder() {
     month: false,
     weekday: false,
   });
+  const [naturalLanguageInput, setNaturalLanguageInput] = useState('');
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [nextRunTimes, setNextRunTimes] = useState<string[]>([]);
 
   // Initialize with daily preset
   useEffect(() => {
@@ -95,7 +100,7 @@ export default function CronExpressionBuilder() {
     }
   };
 
-  const parsePart = (part: string, unit: TimeUnit): string[] => {
+  const parsePart = (part: string, _unit: TimeUnit): string[] => {
     if (part === '*') return ['*'];
     if (part.includes(',')) return part.split(',');
     if (part.includes('-')) {
@@ -179,6 +184,33 @@ export default function CronExpressionBuilder() {
     toast.success('Copied to clipboard!');
   };
 
+  const handleNaturalLanguageAnalysis = async () => {
+    if (!naturalLanguageInput.trim()) {
+      toast.error('Please enter a description');
+      return;
+    }
+
+    setIsAnalyzing(true);
+    try {
+      const result = await parseNaturalLanguageCron({ 
+        description: naturalLanguageInput 
+      });
+      
+      // Update the expression and UI
+      setCustomExpression(result.cronExpression);
+      parseExpression(result.cronExpression);
+      setActivePreset('custom');
+      setNextRunTimes(result.nextRunTimes);
+      
+      toast.success('Successfully parsed your description!');
+    } catch (error) {
+      console.error('Error parsing natural language:', error);
+      toast.error('Failed to parse your description. Please try again.');
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
   const togglePopover = (unit: TimeUnit, open: boolean) => {
     setOpenPopovers({ ...openPopovers, [unit]: open });
   };
@@ -223,6 +255,43 @@ export default function CronExpressionBuilder() {
       </div>
 
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow p-6">
+        {/* Natural Language Input Section */}
+        <div className="mb-8 p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+          <div className="flex items-center gap-2 mb-3">
+            <Sparkles className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            <h3 className="font-medium text-blue-900 dark:text-blue-100">Natural Language Input</h3>
+          </div>
+          <p className="text-sm text-blue-700 dark:text-blue-300 mb-3">
+            Describe when you want your task to run in plain English (e.g., "every day at 9 AM", "every Monday at 2 PM", "every 15 minutes")
+          </p>
+          <div className="space-y-3">
+            <Textarea
+              placeholder="Type your schedule description here... (e.g., 'Run every weekday at 9:30 AM')"
+              value={naturalLanguageInput}
+              onChange={(e) => setNaturalLanguageInput(e.target.value)}
+              className="min-h-[80px] resize-none"
+            />
+            <div className="flex gap-2">
+              <Button 
+                onClick={handleNaturalLanguageAnalysis}
+                disabled={isAnalyzing || !naturalLanguageInput.trim()}
+                className="flex items-center gap-2"
+              >
+                <Sparkles className="h-4 w-4" />
+                {isAnalyzing ? 'Analyzing...' : 'Generate Cron Expression'}
+              </Button>
+              {naturalLanguageInput && (
+                <Button 
+                  variant="outline" 
+                  onClick={() => setNaturalLanguageInput('')}
+                >
+                  Clear
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+
         <Tabs value={activePreset} onValueChange={val => handlePresetChange(val as Preset)}>
           <TabsList className="grid w-full grid-cols-6 mb-6">
             {presets.map(preset => (
@@ -350,11 +419,21 @@ export default function CronExpressionBuilder() {
               <h3 className="font-medium mb-2">Next Run Times</h3>
               <div className="text-sm text-muted-foreground">
                 {isValid ? (
-                  <div className="space-y-1">
-                    <div>Next: {new Date(Date.now() + 3600000).toLocaleString()}</div>
-                    <div>Then: {new Date(Date.now() + 7200000).toLocaleString()}</div>
-                    <div>After: {new Date(Date.now() + 10800000).toLocaleString()}</div>
-                  </div>
+                  nextRunTimes.length > 0 ? (
+                    <div className="space-y-1">
+                      {nextRunTimes.map((time, index) => (
+                        <div key={index}>
+                          {index === 0 ? 'Next: ' : index === 1 ? 'Then: ' : 'After: '}{time}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="space-y-1">
+                      <div>Next: {new Date(Date.now() + 3600000).toLocaleString()}</div>
+                      <div>Then: {new Date(Date.now() + 7200000).toLocaleString()}</div>
+                      <div>After: {new Date(Date.now() + 10800000).toLocaleString()}</div>
+                    </div>
+                  )
                 ) : (
                   'Enter a valid cron expression to see run times'
                 )}
