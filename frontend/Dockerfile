@@ -1,5 +1,5 @@
 # Build stage
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -7,7 +7,8 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install all dependencies (including dev dependencies)
-RUN npm ci
+# Use --legacy-peer-deps to handle React 19 compatibility issues
+RUN npm ci --legacy-peer-deps
 
 # Copy source code
 COPY . .
