@@ -3,6 +3,8 @@ import { LogOut, User } from 'lucide-react';
 import * as React from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { DropdownMenu, useDropdown } from '../custom/DropdownMenu';
+import { AIIndicator } from '../ui/ai-loading';
+import { useAI } from '@/context/AIProvider';
 
 /* ──────────────────────────────── */
 /* Reusable List Item for Nav Menus */
@@ -154,9 +156,15 @@ function NavMenu() {
 /* ──────────────────── */
 export function Layout() {
   const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
+  const { isAnyOperationActive, getCurrentOperation } = useAI();
 
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Global AI Activity Indicator */}
+      <AIIndicator 
+        isActive={isAnyOperationActive} 
+        operation={getCurrentOperation()?.description || 'processing'}
+      />
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="p-2 mx-2 flex h-16 items-center">
           <div className="mx-4 bg-neutral-900 rounded-[5px] hidden md:flex">

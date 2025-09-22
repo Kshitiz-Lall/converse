@@ -11,6 +11,7 @@ import { Check, ChevronsUpDown, Clock, Copy, X, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { parseNaturalLanguageCron } from '../services/cronApi';
+import { AIButton } from '@/components/ui/ai-loading';
 
 type TimeUnit = 'minute' | 'hour' | 'day' | 'month' | 'weekday';
 type Preset = 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'custom';
@@ -272,14 +273,17 @@ export default function CronExpressionBuilder() {
               className="min-h-[80px] resize-none"
             />
             <div className="flex gap-2">
-              <Button 
+              <AIButton 
+                isLoading={isAnalyzing}
+                operation="analyzing"
                 onClick={handleNaturalLanguageAnalysis}
                 disabled={isAnalyzing || !naturalLanguageInput.trim()}
-                className="flex items-center gap-2"
+                variant="primary"
+                size="md"
               >
                 <Sparkles className="h-4 w-4" />
-                {isAnalyzing ? 'Analyzing...' : 'Generate Cron Expression'}
-              </Button>
+                Generate Cron Expression
+              </AIButton>
               {naturalLanguageInput && (
                 <Button 
                   variant="outline" 

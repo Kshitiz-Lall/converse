@@ -35,6 +35,7 @@ import { toast } from 'sonner';
 
 // Import constants and utils
 import { APP_TEXT, DataFormat, EXAMPLE_DATA, FORMAT_OPTIONS } from './../../constants/converter';
+import { AILoading, AIButton } from '@/components/ui/ai-loading';
 import {
   convertData,
   copyToClipboard,
@@ -360,20 +361,17 @@ export default function DataFormatPage() {
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold">{APP_TEXT.input}</h2>
               <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="icon"
+                <AIButton
+                  isLoading={isFormatting}
+                  operation="formatting"
                   onClick={handleFormat}
-                  title="Format"
-                  className="hover:bg-primary/10"
                   disabled={isFormatting || !inputText}
+                  variant="outline"
+                  size="sm"
+                  className="hover:bg-primary/10"
                 >
-                  {isFormatting ? (
-                    <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-t-2 border-primary"></div>
-                  ) : (
-                    <Check className="h-4 w-4" />
-                  )}
-                </Button>
+                  <Check className="h-4 w-4" />
+                </AIButton>
                 <Button
                   variant="outline"
                   size="icon"
@@ -437,23 +435,18 @@ export default function DataFormatPage() {
         {/* Controls for mobile */}
         <div className="flex flex-col gap-4 md:hidden">
           <div className="flex gap-2 justify-center">
-            <Button
+            <AIButton
+              isLoading={isConverting}
+              operation="converting"
               onClick={handleConvert}
-              className="flex gap-2 bg-primary hover:bg-primary/90"
               disabled={isConverting || isFormatting || !inputText}
+              variant="primary"
+              size="md"
+              className="bg-primary hover:bg-primary/90"
             >
-              {isConverting ? (
-                <>
-                  <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-t-2 border-white"></div>
-                  Converting...
-                </>
-              ) : (
-                <>
-                  <ArrowLeftRight className="h-4 w-4" />
-                  {APP_TEXT.convert}
-                </>
-              )}
-            </Button>
+              <ArrowLeftRight className="h-4 w-4" />
+              {APP_TEXT.convert}
+            </AIButton>
             <Button
               variant="outline"
               size="icon"
@@ -463,22 +456,18 @@ export default function DataFormatPage() {
             >
               <ArrowLeftRight className="h-4 w-4" />
             </Button>
-            <Button
-              variant="outline"
+            <AIButton
+              isLoading={isAnalyzing}
+              operation="analyzing"
               onClick={handleAnalyze}
-              title="AI Analyze Data"
-              className="flex gap-2 hover:bg-blue-50 border-blue-200"
               disabled={isAnalyzing || !inputText || isConverting}
+              variant="outline"
+              size="md"
+              className="hover:bg-blue-50 border-blue-200 text-blue-600"
             >
-              {isAnalyzing ? (
-                <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-t-2 border-blue-500"></div>
-              ) : (
-                <>
-                  <Brain className="h-4 w-4 text-blue-600" />
-                  <span className="text-sm">Analyze</span>
-                </>
-              )}
-            </Button>
+              <Brain className="h-4 w-4" />
+              <span className="text-sm">Analyze</span>
+            </AIButton>
           </div>
         </div>          {/* Output Section */}
           <div className="flex flex-col gap-4 rounded-lg shadow-md p-5">
@@ -538,26 +527,43 @@ export default function DataFormatPage() {
           </div>
         </div>
 
+        {/* AI Operations Loading Indicators */}
+        <div className="flex justify-center mt-4">
+          <AILoading 
+            isLoading={isConverting} 
+            operation="converting" 
+            size="md" 
+            className="mx-4"
+          />
+          <AILoading 
+            isLoading={isFormatting} 
+            operation="formatting" 
+            size="md" 
+            className="mx-4"
+          />
+          <AILoading 
+            isLoading={isAnalyzing} 
+            operation="analyzing" 
+            size="md" 
+            className="mx-4"
+          />
+        </div>
+
         {/* Controls for desktop */}
         <div className="hidden md:flex flex-col items-center gap-4 mt-6 mb-6">
           <div className="flex gap-2">
-            <Button
+            <AIButton
+              isLoading={isConverting}
+              operation="converting"
               onClick={handleConvert}
-              className="flex gap-2 bg-primary hover:bg-primary/90"
               disabled={isConverting || isFormatting || !inputText}
+              variant="primary"
+              size="md"
+              className="bg-primary hover:bg-primary/90"
             >
-              {isConverting ? (
-                <>
-                  <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-t-2 border-white"></div>
-                  Converting...
-                </>
-              ) : (
-                <>
-                  <ArrowLeftRight className="h-4 w-4" />
-                  {APP_TEXT.convert}
-                </>
-              )}
-            </Button>
+              <ArrowLeftRight className="h-4 w-4" />
+              {APP_TEXT.convert}
+            </AIButton>
             <Button
               variant="outline"
               size="icon"
@@ -567,22 +573,18 @@ export default function DataFormatPage() {
             >
               <ArrowLeftRight className="h-4 w-4" />
             </Button>
-            <Button
-              variant="outline"
+            <AIButton
+              isLoading={isAnalyzing}
+              operation="analyzing"
               onClick={handleAnalyze}
-              title="AI Analyze Data Structure"
-              className="flex gap-2 hover:bg-blue-50 border-blue-200"
               disabled={isAnalyzing || !inputText || isConverting}
+              variant="outline"
+              size="md"
+              className="hover:bg-blue-50 border-blue-200 text-blue-600"
             >
-              {isAnalyzing ? (
-                <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-t-2 border-blue-500"></div>
-              ) : (
-                <>
-                  <Brain className="h-4 w-4 text-blue-600" />
-                  <span>AI Analyze</span>
-                </>
-              )}
-            </Button>
+              <Brain className="h-4 w-4" />
+              <span>AI Analyze</span>
+            </AIButton>
           </div>
         </div>
 
